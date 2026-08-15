@@ -1,0 +1,1297 @@
+{
+  "advisory_aliases": {
+    "add_timing_margin": {
+      "openlane": "SYNTH_CLOCK_UNCERTAINTY"
+    },
+    "cell_padding": {
+      "openlane": "CELL_PAD"
+    },
+    "clock_period_ps": {
+      "openlane": "CLOCK_PERIOD",
+      "orfs": "CLOCK_PERIOD"
+    },
+    "core_util": {
+      "openlane": "FP_CORE_UTIL",
+      "orfs": "CORE_UTILIZATION"
+    },
+    "decap_insertion": {
+      "openlane": "RUN_TAP_DECAP_INSERTION"
+    },
+    "detailed_route_end_iteration": {
+      "openlane": "DRT_OPT_ITERS",
+      "orfs": "DETAILED_ROUTE_END_ITERATION"
+    },
+    "die_area": {
+      "openlane": "DIE_AREA"
+    },
+    "enable_hold_fix_post_cts": {
+      "openlane": "PL_RESIZER_HOLD_SLACK_MARGIN"
+    },
+    "fp_sizing": {
+      "openlane": "FP_SIZING"
+    },
+    "gcell_grid": {
+      "openlane": "GRT_ADJUSTMENT"
+    },
+    "hold_buffer_insertion": {
+      "openlane": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT"
+    },
+    "insert_buffers_before_ram": {
+      "openlane": "PL_RESIZER_DESIGN_OPTIMIZATIONS"
+    },
+    "layer_adjustment": {
+      "openlane": "GRT_LAYER_ADJUSTMENTS"
+    },
+    "macro_halo": {
+      "openlane": "FP_PDN_HALO",
+      "orfs": "MACRO_PLACE_HALO"
+    },
+    "macro_placement": {
+      "openlane": "MACRO_PLACEMENT_STATUS"
+    },
+    "place_density": {
+      "openlane": "PL_TARGET_DENSITY",
+      "orfs": "PLACE_DENSITY"
+    },
+    "upsize_buffer": {
+      "openlane": "PL_RESIZER_DESIGN_OPTIMIZATIONS"
+    },
+    "useful_skew": {
+      "openlane": "CTS_TARGET_SKEW"
+    }
+  },
+  "schema": {
+    "openlane:BASE_SDC_FILE": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Base SDC template",
+      "format": "tcl_scalar",
+      "key": "BASE_SDC_FILE",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "path"
+    },
+    "openlane:CELL_PAD": {
+      "advisory": false,
+      "category": "placement",
+      "default": 4,
+      "description": "Cell padding (sites) for detail placement",
+      "format": "tcl_scalar",
+      "key": "CELL_PAD",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:CLOCK_NET": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Clock net, if different from CLOCK_PORT",
+      "format": "tcl_scalar",
+      "key": "CLOCK_NET",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:CLOCK_PERIOD": {
+      "advisory": false,
+      "category": "core",
+      "default": 10.0,
+      "description": "Clock period (ns)",
+      "format": "tcl_scalar",
+      "key": "CLOCK_PERIOD",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:CLOCK_PORT": {
+      "advisory": false,
+      "category": "core",
+      "default": "clk",
+      "description": "Clock port name",
+      "format": "tcl_scalar",
+      "key": "CLOCK_PORT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:CTS_CLK_BUFFER_LIST": {
+      "advisory": false,
+      "category": "cts",
+      "default": null,
+      "description": "Candidate clock buffer cells",
+      "format": "tcl_scalar",
+      "key": "CTS_CLK_BUFFER_LIST",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:CTS_MAX_CAP": {
+      "advisory": false,
+      "category": "cts",
+      "default": 1.0,
+      "description": "Max cap for CTS buffers",
+      "format": "tcl_scalar",
+      "key": "CTS_MAX_CAP",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:CTS_ROOT_BUFFER": {
+      "advisory": false,
+      "category": "cts",
+      "default": null,
+      "description": "Root clock buffer cell",
+      "format": "tcl_scalar",
+      "key": "CTS_ROOT_BUFFER",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:CTS_TARGET_SKEW": {
+      "advisory": false,
+      "category": "cts",
+      "default": 200,
+      "description": "Target clock skew (ps)",
+      "format": "tcl_scalar",
+      "key": "CTS_TARGET_SKEW",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:CVC_SCRIPTS_DIR": {
+      "advisory": false,
+      "category": "signoff",
+      "default": null,
+      "description": "CVC scripts directory",
+      "format": "tcl_scalar",
+      "key": "CVC_SCRIPTS_DIR",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "path"
+    },
+    "openlane:DECAP_CELL": {
+      "advisory": false,
+      "category": "pdn",
+      "default": null,
+      "description": "Decap cell name(s)",
+      "format": "tcl_scalar",
+      "key": "DECAP_CELL",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:DESIGN_NAME": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Top module name",
+      "format": "tcl_scalar",
+      "key": "DESIGN_NAME",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:DIE_AREA": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": "0 0 1500 1500",
+      "description": "Die area (used if FP_SIZING=absolute)",
+      "format": "tcl_scalar",
+      "key": "DIE_AREA",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:DIODE_INSERTION_STRATEGY": {
+      "advisory": false,
+      "category": "routing",
+      "default": 3,
+      "description": "Antenna diode insertion strategy (1-6)",
+      "format": "tcl_scalar",
+      "key": "DIODE_INSERTION_STRATEGY",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:DRT_MAX_LAYER": {
+      "advisory": false,
+      "category": "routing",
+      "default": null,
+      "description": "Cap detailed routing at this layer",
+      "format": "tcl_scalar",
+      "key": "DRT_MAX_LAYER",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:DRT_OPT_ITERS": {
+      "advisory": false,
+      "category": "routing",
+      "default": 64,
+      "description": "Detailed route optimization iterations",
+      "format": "tcl_scalar",
+      "key": "DRT_OPT_ITERS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:FP_ASPECT_RATIO": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": 1.0,
+      "description": "Core aspect ratio (relative sizing)",
+      "format": "tcl_scalar",
+      "key": "FP_ASPECT_RATIO",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:FP_CORE_UTIL": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": 40,
+      "description": "Target core utilization %",
+      "format": "tcl_scalar",
+      "key": "FP_CORE_UTIL",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:FP_IO_HMETAL": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": 4,
+      "description": "Horizontal IO metal layer",
+      "format": "tcl_scalar",
+      "key": "FP_IO_HMETAL",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:FP_IO_MODE": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": "random_equidistant",
+      "description": "IO pin placement mode",
+      "format": "tcl_scalar",
+      "key": "FP_IO_MODE",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:FP_IO_VMETAL": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": 3,
+      "description": "Vertical IO metal layer",
+      "format": "tcl_scalar",
+      "key": "FP_IO_VMETAL",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:FP_PDN_CORE_RING": {
+      "advisory": false,
+      "category": "pdn",
+      "default": false,
+      "description": "Enable core power ring",
+      "format": "tcl_bool",
+      "key": "FP_PDN_CORE_RING",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:FP_PDN_ENABLE_RAILS": {
+      "advisory": false,
+      "category": "pdn",
+      "default": true,
+      "description": "Enable std cell power rails",
+      "format": "tcl_bool",
+      "key": "FP_PDN_ENABLE_RAILS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:FP_PDN_HALO": {
+      "advisory": false,
+      "category": "pdn",
+      "default": "10 10",
+      "description": "Halo around macros for PDN",
+      "format": "tcl_scalar",
+      "key": "FP_PDN_HALO",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:FP_PDN_HPITCH": {
+      "advisory": false,
+      "category": "pdn",
+      "default": 153.6,
+      "description": "Horizontal PDN strap pitch",
+      "format": "tcl_scalar",
+      "key": "FP_PDN_HPITCH",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:FP_PDN_HWIDTH": {
+      "advisory": false,
+      "category": "pdn",
+      "default": 1.6,
+      "description": "Horizontal PDN strap width",
+      "format": "tcl_scalar",
+      "key": "FP_PDN_HWIDTH",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:FP_PDN_VPITCH": {
+      "advisory": false,
+      "category": "pdn",
+      "default": 153.18,
+      "description": "Vertical PDN strap pitch",
+      "format": "tcl_scalar",
+      "key": "FP_PDN_VPITCH",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:FP_PDN_VWIDTH": {
+      "advisory": false,
+      "category": "pdn",
+      "default": 1.6,
+      "description": "Vertical PDN strap width",
+      "format": "tcl_scalar",
+      "key": "FP_PDN_VWIDTH",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:FP_SIZING": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": "absolute",
+      "description": "absolute|relative",
+      "format": "tcl_scalar",
+      "key": "FP_SIZING",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:FP_TAPCELL_DIST": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": 15,
+      "description": "Tap cell distance",
+      "format": "tcl_scalar",
+      "key": "FP_TAPCELL_DIST",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:GLB_RESIZER_DESIGN_OPTIMIZATIONS": {
+      "advisory": false,
+      "category": "timing",
+      "default": false,
+      "description": "Enable global resizer design opt",
+      "format": "tcl_bool",
+      "key": "GLB_RESIZER_DESIGN_OPTIMIZATIONS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:GLB_RESIZER_HOLD_SLACK_MARGIN": {
+      "advisory": false,
+      "category": "timing",
+      "default": 0.1,
+      "description": "Global resizer hold margin (ns)",
+      "format": "tcl_scalar",
+      "key": "GLB_RESIZER_HOLD_SLACK_MARGIN",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:GLB_RESIZER_MAX_CAP_MARGIN": {
+      "advisory": false,
+      "category": "timing",
+      "default": 0.1,
+      "description": "Global resizer max cap margin",
+      "format": "tcl_scalar",
+      "key": "GLB_RESIZER_MAX_CAP_MARGIN",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:GLB_RESIZER_MAX_SLEW_MARGIN": {
+      "advisory": false,
+      "category": "timing",
+      "default": 0.1,
+      "description": "Global resizer max slew margin",
+      "format": "tcl_scalar",
+      "key": "GLB_RESIZER_MAX_SLEW_MARGIN",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:GLB_RESIZER_TIMING_OPTIMIZATIONS": {
+      "advisory": false,
+      "category": "timing",
+      "default": false,
+      "description": "Enable global resizer timing opt",
+      "format": "tcl_bool",
+      "key": "GLB_RESIZER_TIMING_OPTIMIZATIONS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:GND_NETS": {
+      "advisory": false,
+      "category": "pdn",
+      "default": "VGND",
+      "description": "Ground net name(s)",
+      "format": "tcl_scalar",
+      "key": "GND_NETS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:GRT_ADJUSTMENT": {
+      "advisory": false,
+      "category": "routing",
+      "default": 0.15,
+      "description": "Global router congestion adjustment",
+      "format": "tcl_scalar",
+      "key": "GRT_ADJUSTMENT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:GRT_ANT_ITERS": {
+      "advisory": false,
+      "category": "routing",
+      "default": 3,
+      "description": "Antenna-repair iterations during GRT",
+      "format": "tcl_scalar",
+      "key": "GRT_ANT_ITERS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:GRT_LAYER_ADJUSTMENTS": {
+      "advisory": false,
+      "category": "routing",
+      "default": null,
+      "description": "Per-layer GRT adjustment list",
+      "format": "tcl_scalar",
+      "key": "GRT_LAYER_ADJUSTMENTS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:GRT_MAX_DIODE_INS_ITERS": {
+      "advisory": false,
+      "category": "routing",
+      "default": 3,
+      "description": "Max diode insertion iterations",
+      "format": "tcl_scalar",
+      "key": "GRT_MAX_DIODE_INS_ITERS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:GRT_OVERFLOW_ITERS": {
+      "advisory": false,
+      "category": "routing",
+      "default": 50,
+      "description": "Global route overflow iterations",
+      "format": "tcl_scalar",
+      "key": "GRT_OVERFLOW_ITERS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:KLAYOUT_DRC_KLAYOUT_OPTIONS": {
+      "advisory": false,
+      "category": "signoff",
+      "default": null,
+      "description": "Extra KLayout DRC options",
+      "format": "tcl_scalar",
+      "key": "KLAYOUT_DRC_KLAYOUT_OPTIONS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:LVS_INSERT_POWER_PINS": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Insert power pins before LVS",
+      "format": "tcl_bool",
+      "key": "LVS_INSERT_POWER_PINS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:MACRO_PLACEMENT_CFG": {
+      "advisory": false,
+      "category": "placement",
+      "default": null,
+      "description": "Manual macro placement file",
+      "format": "tcl_scalar",
+      "key": "MACRO_PLACEMENT_CFG",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "path"
+    },
+    "openlane:MACRO_PLACEMENT_STATUS": {
+      "advisory": false,
+      "category": "placement",
+      "default": "INFERRED",
+      "description": "Macro placement source",
+      "format": "tcl_scalar",
+      "key": "MACRO_PLACEMENT_STATUS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:MAGIC_DRC_USE_GDS": {
+      "advisory": false,
+      "category": "signoff",
+      "default": false,
+      "description": "Run Magic DRC on GDS instead of def/lef",
+      "format": "tcl_bool",
+      "key": "MAGIC_DRC_USE_GDS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:MAGIC_EXT_USE_GDS": {
+      "advisory": false,
+      "category": "signoff",
+      "default": false,
+      "description": "Extract parasitics from GDS",
+      "format": "tcl_bool",
+      "key": "MAGIC_EXT_USE_GDS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:MAGIC_GENERATE_GDS": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Generate GDSII via Magic",
+      "format": "tcl_bool",
+      "key": "MAGIC_GENERATE_GDS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:MAGIC_ZEROIZE_ORIGIN": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Zero the layout origin",
+      "format": "tcl_bool",
+      "key": "MAGIC_ZEROIZE_ORIGIN",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:MAX_FANOUT_CONSTRAINT": {
+      "advisory": false,
+      "category": "timing",
+      "default": 20,
+      "description": "Post-synth max fanout constraint",
+      "format": "tcl_scalar",
+      "key": "MAX_FANOUT_CONSTRAINT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:MAX_ROUTING_LAYER": {
+      "advisory": false,
+      "category": "routing",
+      "default": "met5",
+      "description": "Maximum routing layer",
+      "format": "tcl_scalar",
+      "key": "MAX_ROUTING_LAYER",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:MAX_WIRE_LENGTH": {
+      "advisory": false,
+      "category": "routing",
+      "default": 0,
+      "description": "Max wire length before buffering (0=off)",
+      "format": "tcl_scalar",
+      "key": "MAX_WIRE_LENGTH",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:MIN_ROUTING_LAYER": {
+      "advisory": false,
+      "category": "routing",
+      "default": "met1",
+      "description": "Minimum routing layer",
+      "format": "tcl_scalar",
+      "key": "MIN_ROUTING_LAYER",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:PDK": {
+      "advisory": false,
+      "category": "core",
+      "default": "sky130A",
+      "description": "PDK variant. Default sky130A, confirmed via FAE config.tcl comment on this install. This is ONLY a fallback for designs with no existing config to seed a real value from -- any seeded/existing config value always overrides this default, verified below.",
+      "format": "tcl_scalar",
+      "key": "PDK",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:PL_RANDOM_GLB_PLACEMENT": {
+      "advisory": false,
+      "category": "placement",
+      "default": false,
+      "description": "Randomize initial global placement",
+      "format": "tcl_bool",
+      "key": "PL_RANDOM_GLB_PLACEMENT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:PL_RESIZER_DESIGN_OPTIMIZATIONS": {
+      "advisory": false,
+      "category": "placement",
+      "default": false,
+      "description": "Enable resizer design opt during placement",
+      "format": "tcl_bool",
+      "key": "PL_RESIZER_DESIGN_OPTIMIZATIONS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:PL_RESIZER_HOLD_MAX_BUFFER_PERCENT": {
+      "advisory": false,
+      "category": "placement",
+      "default": 20,
+      "description": "Max % of cells as hold buffers",
+      "format": "tcl_scalar",
+      "key": "PL_RESIZER_HOLD_MAX_BUFFER_PERCENT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:PL_RESIZER_HOLD_SLACK_MARGIN": {
+      "advisory": false,
+      "category": "placement",
+      "default": 0.1,
+      "description": "Hold slack margin target (ns)",
+      "format": "tcl_scalar",
+      "key": "PL_RESIZER_HOLD_SLACK_MARGIN",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:PL_RESIZER_MAX_CAP_MARGIN": {
+      "advisory": false,
+      "category": "placement",
+      "default": 0.1,
+      "description": "Max cap margin",
+      "format": "tcl_scalar",
+      "key": "PL_RESIZER_MAX_CAP_MARGIN",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:PL_RESIZER_MAX_SLEW_MARGIN": {
+      "advisory": false,
+      "category": "placement",
+      "default": 0.1,
+      "description": "Max slew margin",
+      "format": "tcl_scalar",
+      "key": "PL_RESIZER_MAX_SLEW_MARGIN",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:PL_RESIZER_TIMING_OPTIMIZATIONS": {
+      "advisory": false,
+      "category": "placement",
+      "default": false,
+      "description": "Enable resizer timing opt during placement",
+      "format": "tcl_bool",
+      "key": "PL_RESIZER_TIMING_OPTIMIZATIONS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:PL_TARGET_DENSITY": {
+      "advisory": false,
+      "category": "placement",
+      "default": 0.55,
+      "description": "Global placement target density",
+      "format": "tcl_scalar",
+      "key": "PL_TARGET_DENSITY",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:QUIT_ON_MAGIC_DRC": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Whether the flow aborts on Magic DRC violations. Left True by default (real DRC violations SHOULD block the flow) -- FP-007 forces it False only for the specific documented nwell.4 tap-desert signature, not violations in general.",
+      "format": "tcl_bool",
+      "key": "QUIT_ON_MAGIC_DRC",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:QUIT_ON_WARNINGS": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Abort flow on synth warnings",
+      "format": "tcl_bool",
+      "key": "QUIT_ON_WARNINGS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RCX_RULES": {
+      "advisory": false,
+      "category": "signoff",
+      "default": null,
+      "description": "Parasitic extraction rules file",
+      "format": "tcl_scalar",
+      "key": "RCX_RULES",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "path"
+    },
+    "openlane:ROUTING_CORES": {
+      "advisory": false,
+      "category": "routing",
+      "default": 4,
+      "description": "Parallel threads for TritonRoute",
+      "format": "tcl_scalar",
+      "key": "ROUTING_CORES",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:RUN_CVC": {
+      "advisory": false,
+      "category": "signoff",
+      "default": false,
+      "description": "Run CVC circuit-validity check",
+      "format": "tcl_bool",
+      "key": "RUN_CVC",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RUN_FILL_INSERTION": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Insert fill cells",
+      "format": "tcl_bool",
+      "key": "RUN_FILL_INSERTION",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RUN_KLAYOUT": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Run KLayout DRC/XOR",
+      "format": "tcl_bool",
+      "key": "RUN_KLAYOUT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RUN_LINTER": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Run Verilator lint pass",
+      "format": "tcl_bool",
+      "key": "RUN_LINTER",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RUN_LVS": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Run Netgen LVS",
+      "format": "tcl_bool",
+      "key": "RUN_LVS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RUN_MAGIC_DRC": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Run Magic DRC",
+      "format": "tcl_bool",
+      "key": "RUN_MAGIC_DRC",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RUN_SPEF_EXTRACTION": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Run parasitic extraction",
+      "format": "tcl_bool",
+      "key": "RUN_SPEF_EXTRACTION",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:RUN_TAP_DECAP_INSERTION": {
+      "advisory": false,
+      "category": "signoff",
+      "default": true,
+      "description": "Insert tap/decap cells",
+      "format": "tcl_bool",
+      "key": "RUN_TAP_DECAP_INSERTION",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:SDC_FILE": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Path to SDC constraints",
+      "format": "tcl_scalar",
+      "key": "SDC_FILE",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "path"
+    },
+    "openlane:SPEF_EXTRACTOR": {
+      "advisory": false,
+      "category": "signoff",
+      "default": "openroad",
+      "description": "SPEF extraction tool",
+      "format": "tcl_scalar",
+      "key": "SPEF_EXTRACTOR",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:STD_CELL_LIBRARY": {
+      "advisory": false,
+      "category": "core",
+      "default": "sky130_fd_sc_hd",
+      "description": "Standard cell library. Default sky130_fd_sc_hd, confirmed via FAE config.tcl comment. Same fallback-only behavior as PDK above.",
+      "format": "tcl_scalar",
+      "key": "STD_CELL_LIBRARY",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:SYNTH_BUFFERING": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": true,
+      "description": "Enable synth-stage buffering",
+      "format": "tcl_bool",
+      "key": "SYNTH_BUFFERING",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:SYNTH_CLOCK_TRANSITION": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": 0.15,
+      "description": "Target clock transition time (ns)",
+      "format": "tcl_scalar",
+      "key": "SYNTH_CLOCK_TRANSITION",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:SYNTH_CLOCK_UNCERTAINTY": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": 0.25,
+      "description": "Clock uncertainty (ns)",
+      "format": "tcl_scalar",
+      "key": "SYNTH_CLOCK_UNCERTAINTY",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:SYNTH_ELABORATE_ONLY": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Stop after elaboration",
+      "format": "tcl_bool",
+      "key": "SYNTH_ELABORATE_ONLY",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:SYNTH_FLAT_TOP": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Flatten only the top module",
+      "format": "tcl_bool",
+      "key": "SYNTH_FLAT_TOP",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:SYNTH_MAX_FANOUT": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": 20,
+      "description": "Max fanout constraint at synth",
+      "format": "tcl_scalar",
+      "key": "SYNTH_MAX_FANOUT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "int"
+    },
+    "openlane:SYNTH_NO_FLAT": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Keep hierarchy (don't flatten)",
+      "format": "tcl_bool",
+      "key": "SYNTH_NO_FLAT",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:SYNTH_READ_BLACKBOX_LIB": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Read lib as blackbox at synth",
+      "format": "tcl_bool",
+      "key": "SYNTH_READ_BLACKBOX_LIB",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:SYNTH_STRATEGY": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": "AREA 0",
+      "description": "Yosys/abc synth strategy (AREA 0-3, DELAY 0-4)",
+      "format": "tcl_scalar",
+      "key": "SYNTH_STRATEGY",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:SYNTH_TIMING_DERATE": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": 0.05,
+      "description": "OCV timing derate",
+      "format": "tcl_scalar",
+      "key": "SYNTH_TIMING_DERATE",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "float"
+    },
+    "openlane:SYNTH_TOP": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": null,
+      "description": "Explicit synth top (defaults to DESIGN_NAME)",
+      "format": "tcl_scalar",
+      "key": "SYNTH_TOP",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:USE_ARC_ANTENNA_CHECK": {
+      "advisory": false,
+      "category": "routing",
+      "default": true,
+      "description": "Use ARC-based antenna checking",
+      "format": "tcl_bool",
+      "key": "USE_ARC_ANTENNA_CHECK",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:VDD_NETS": {
+      "advisory": false,
+      "category": "pdn",
+      "default": "VPWR",
+      "description": "Power net name(s)",
+      "format": "tcl_scalar",
+      "key": "VDD_NETS",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "str"
+    },
+    "openlane:VERILATOR_RELAX": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Relax Verilator lint strictness",
+      "format": "tcl_bool",
+      "key": "VERILATOR_RELAX",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "bool"
+    },
+    "openlane:VERILOG_FILES": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Verilog source glob",
+      "format": "tcl_raw",
+      "key": "VERILOG_FILES",
+      "maps_to": null,
+      "tool": "openlane",
+      "type": "tcl_glob"
+    },
+    "orfs:CLOCK_PERIOD": {
+      "advisory": false,
+      "category": "core",
+      "default": 1000,
+      "description": "Clock period (ps)",
+      "format": "mk_scalar",
+      "key": "CLOCK_PERIOD",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "float"
+    },
+    "orfs:CLOCK_PORT": {
+      "advisory": false,
+      "category": "core",
+      "default": "clk",
+      "description": "Clock port name",
+      "format": "mk_scalar",
+      "key": "CLOCK_PORT",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "str"
+    },
+    "orfs:CORE_ASPECT_RATIO": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": 1.0,
+      "description": "Core aspect ratio",
+      "format": "mk_scalar",
+      "key": "CORE_ASPECT_RATIO",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "float"
+    },
+    "orfs:CORE_UTILIZATION": {
+      "advisory": false,
+      "category": "floorplan",
+      "default": 40,
+      "description": "Target core utilization %",
+      "format": "mk_scalar",
+      "key": "CORE_UTILIZATION",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "float"
+    },
+    "orfs:DESIGN_NAME": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Top module name",
+      "format": "mk_scalar",
+      "key": "DESIGN_NAME",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "str"
+    },
+    "orfs:DETAILED_ROUTE_END_ITERATION": {
+      "advisory": false,
+      "category": "routing",
+      "default": 64,
+      "description": "Detailed route iteration cap",
+      "format": "mk_scalar",
+      "key": "DETAILED_ROUTE_END_ITERATION",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "int"
+    },
+    "orfs:HOLD_SLACK_MARGIN": {
+      "advisory": false,
+      "category": "timing",
+      "default": 0.1,
+      "description": "Hold slack margin target (ns)",
+      "format": "mk_scalar",
+      "key": "HOLD_SLACK_MARGIN",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "float"
+    },
+    "orfs:MACRO_PLACE_CHANNEL": {
+      "advisory": false,
+      "category": "placement",
+      "default": "10 10",
+      "description": "Channel width around macros",
+      "format": "mk_scalar",
+      "key": "MACRO_PLACE_CHANNEL",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "str"
+    },
+    "orfs:MACRO_PLACE_HALO": {
+      "advisory": false,
+      "category": "placement",
+      "default": "5 5",
+      "description": "Halo around macros",
+      "format": "mk_scalar",
+      "key": "MACRO_PLACE_HALO",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "str"
+    },
+    "orfs:PDN_TCL": {
+      "advisory": false,
+      "category": "pdn",
+      "default": null,
+      "description": "Custom PDN script",
+      "format": "mk_scalar",
+      "key": "PDN_TCL",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "path"
+    },
+    "orfs:PLACE_DENSITY": {
+      "advisory": false,
+      "category": "placement",
+      "default": 0.45,
+      "description": "Global placement density",
+      "format": "mk_scalar",
+      "key": "PLACE_DENSITY",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "float"
+    },
+    "orfs:PLACE_SITE": {
+      "advisory": false,
+      "category": "placement",
+      "default": "asap7sc7p5t_27_R",
+      "description": "Placement site definition",
+      "format": "mk_scalar",
+      "key": "PLACE_SITE",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "str"
+    },
+    "orfs:PLATFORM": {
+      "advisory": false,
+      "category": "core",
+      "default": "asap7",
+      "description": "PDK platform",
+      "format": "mk_scalar",
+      "key": "PLATFORM",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "str"
+    },
+    "orfs:SAIF_FILE": {
+      "advisory": false,
+      "category": "power",
+      "default": null,
+      "description": "Switching activity file for power analysis",
+      "format": "mk_scalar",
+      "key": "SAIF_FILE",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "path"
+    },
+    "orfs:SDC_FILE": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Path to constraints",
+      "format": "mk_scalar",
+      "key": "SDC_FILE",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "path"
+    },
+    "orfs:SYNTH_FLAT_TOP": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": false,
+      "description": "Flatten only top module",
+      "format": "mk_bool",
+      "key": "SYNTH_FLAT_TOP",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "bool"
+    },
+    "orfs:SYNTH_MAX_FANOUT": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": 20,
+      "description": "Max fanout at synth",
+      "format": "mk_scalar",
+      "key": "SYNTH_MAX_FANOUT",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "int"
+    },
+    "orfs:SYNTH_SDC_FILE": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Synth-stage SDC override",
+      "format": "mk_scalar",
+      "key": "SYNTH_SDC_FILE",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "path"
+    },
+    "orfs:VERILATOR_RELAX": {
+      "advisory": false,
+      "category": "synthesis",
+      "default": true,
+      "description": "Relax Verilator lint strictness",
+      "format": "mk_bool",
+      "key": "VERILATOR_RELAX",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "bool"
+    },
+    "orfs:VERILOG_FILES": {
+      "advisory": false,
+      "category": "core",
+      "default": null,
+      "description": "Space-separated verilog file list",
+      "format": "mk_scalar",
+      "key": "VERILOG_FILES",
+      "maps_to": null,
+      "tool": "orfs",
+      "type": "str"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+fastapi
+uvicorn[standard]
+websockets
+httpx          # only used if WAKEEL_LOCAL_LLM_ENABLED=1

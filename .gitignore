@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Wakeel local artifacts -- generated at runtime, not part of the project
+wakeel_dry_run_previews/
+ppa_reports/
+*.log
+
+# OS noise (harmless on Linux, but if you ever touch this from Windows/WSL Explorer)
+*:Zone.Identifier
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

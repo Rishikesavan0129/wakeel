@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W.A.K.E.E.L. | YUNAIR Empire</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for the Analytics Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome for extra icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: '#00f0ff',
+                        neon: '#39ff14',
+                        darkbg: '#0a0a0f',
+                        panelbg: '#12121c',
+                        'cyber-purple': '#b721ff',
+                        'cyber-pink': '#ff006e'
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite',
+                        'scan': 'scan 3s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'flicker': 'flicker 3s infinite'
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%, 100%': { textShadow: '0 0 5px #00f0ff, 0 0 10px #00f0ff' },
+                            '50%': { textShadow: '0 0 20px #00f0ff, 0 0 30px #00f0ff' }
+                        },
+                        scan: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        flicker: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.3 }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Terminal Scrollbar */
+        #terminal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #terminal::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+
+        #terminal::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        #terminal::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+
+        .glow-box {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+        }
+
+        /* Matrix Rain Effect */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.03;
+        }
+
+        /* Glitch effect for header */
+        .glitch-text {
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+
+            0%,
+            100% {
+                text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
+            }
+
+            33% {
+                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+            }
+
+            66% {
+                text-shadow: 2px 0 #00ffff, -2px 0 #ff00ff;
+            }
+        }
+
+        /* Hexagon pattern overlay */
+        .hex-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L55 20 L55 40 L30 55 L5 40 L5 20 Z' fill='none' stroke='rgba(0,240,255,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 30px;
+        }
+
+        /* Pulse ring animation for status */
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 240, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 240, 255, 0);
+            }
+        }
+
+        /* Neon border animation */
+        .neon-border {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00f0ff, #b721ff, #ff006e, #00f0ff);
+            background-size: 400%;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .neon-border:hover::before {
+            opacity: 0.3;
+            animation: border-rotate 3s linear infinite;
+        }
+
+        @keyframes border-rotate {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Data stream effect */
+        .data-stream {
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            animation: stream 2s linear infinite;
+        }
+
+        @keyframes stream {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(200%);
+            }
+        }
+
+        /* Holographic effect for phase banner */
+        .holographic {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(57, 255, 20, 0.05) 100%);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Custom button hover effect */
+        .cyber-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 240, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cyber-button:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-[#050505] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] text-gray-200 font-sans h-screen flex flex-col overflow-hidden relative hex-bg">
+
+    <!-- Enhanced Matrix Rain Canvas -->
+    <canvas id="matrixCanvas" class="matrix-rain"></canvas>
+
+    <!-- Floating Particles -->
+    <div id="particles"></div>
+
+    <!-- Glowing Orb Effects with animation -->
+    <div
+        class="absolute top-0 left-0 right-0 h-96 bg-cyan-900/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float">
+    </div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-900/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float"
+        style="animation-delay: -3s;"></div>
+
+    <!-- Data Stream overlay -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div
+            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber to-transparent data-stream">
+        </div>
+    </div>
+
+    <!-- Header: W.A.K.E.E.L. Branding with glitch effect -->
+    <header
+        class="bg-panelbg/80 backdrop-blur-sm border-b border-gray-800 p-4 flex justify-between items-center z-10 glow-box relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-cyber/5 to-transparent pointer-events-none"></div>
+        <div class="flex items-center gap-4">
+            <!-- YUNAIR Logo with pulse effect -->
+            <div
+                class="w-12 h-12 rounded-md border border-cyber flex items-center justify-center shadow-[0_0_12px_#00f0ff] bg-black/50 overflow-hidden p-1 pulse-ring">
+                <img src="yunair_logo.png" alt="YUNAIR Logo" class="w-full h-full object-contain"
+                    onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-cyber font-black text-xl tracking-tighter animate-pulse\'>W</span>';" />
+            </div>
+            <div>
+                <h1
+                    class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyper via-cyber-purple to-cyber-pink glitch-text">
+                    W.A.K.E.E.L.
+                </h1>
+                <p
+                    class="text-[10px] tracking-[0.2em] text-gray-500 uppercase font-bold mt-[-2px] flex items-center gap-1">
+                    <i class="fas fa-microchip text-cyber text-[8px]"></i>
+                    A Yunair Empire Tool
+                    <i class="fas fa-bolt text-neon text-[8px] ml-1"></i>
+                </p>
+            </div>
+        </div>
+        <div
+            class="flex items-center gap-3 bg-black/60 backdrop-blur px-4 py-2 rounded-full border border-gray-800 relative">
+            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyber/10 to-neon/10"></div>
+            <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-gray-500 shadow-[0_0_5px_#6b7280] relative">
+                <div class="absolute inset-0 rounded-full animate-ping opacity-75" style="background: currentColor;">
+                </div>
+            </div>
+            <span id="status-val" class="text-xs font-bold tracking-widest text-gray-400 uppercase">SYSTEM IDLE</span>
+            <i class="fas fa-shield-alt text-cyber/50 text-xs"></i>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex flex-1 p-4 gap-4 h-full overflow-hidden relative z-10">
+
+        <!-- LEFT COLUMN: Terminal & Controls -->
+        <div class="w-1/2 flex flex-col gap-4">
+
+            <!-- Command Input with enhanced styling -->
+            <div
+                class="bg-panelbg/90 backdrop-blur-sm rounded-xl p-4 glow-box shrink-0 relative overflow-hidden neon-border">
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-cyber to-cyber-purple"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-cyber/5 rounded-full blur-3xl"></div>
+                <label
+                    class="text-xs text-cyber uppercase tracking-widest font-bold mb-2 block ml-2 flex items-center gap-2">
+                    <i class="fas fa-terminal"></i>
+                    Agentic Command Directive
+                    <i class="fas fa-chevron-right text-[8px] animate-pulse"></i>
+                </label>
+                <textarea id="prompt" rows="3"
+                    class="w-full bg-darkbg/90 border border-gray-800 rounded-lg p-3 text-sm text-gray-100 focus:outline-none focus:border-cyber focus:ring-2 focus:ring-cyber/20 transition-all resize-none shadow-inner"
+                    placeholder="⚡ e.g., Run a sweep on hafiz_core at 2 GHz, 3 GHz, and 4 GHz on 7nm..."></textarea>
+                <button id="runBtn"
+                    class="cyber-button mt-3 w-full bg-gradient-to-r from-cyber/20 via-cyber to-cyber-purple hover:from-cyber/30 hover:via-cyber hover:to-cyber-purple text-white font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] flex items-center justify-center gap-2 border border-cyber/50 relative overflow-hidden group">
+                    <i class="fas fa-cogs group-hover:rotate-180 transition-transform duration-500"></i>
+                    <span id="btnText">Engage W.A.K.E.E.L.</span>
+                    <svg id="btnSpinner" class="animate-spin h-5 w-5 text-white hidden"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <i
+                        class="fas fa-microchip absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </button>
+            </div>
+
+            <!-- Terminal Output with scanlines -->
+            <div
+                class="bg-panelbg/90 backdrop-blur-sm rounded-xl flex-1 flex flex-col glow-box overflow-hidden relative">
+                <div class="border-b border-gray-800 p-2 flex justify-between items-center bg-black/40">
+                    <span
+                        class="text-[10px] text-gray-500 uppercase font-black tracking-widest pl-2 flex items-center gap-2">
+                        <i class="fas fa-code"></i>
+                        Live Subprocess Stream
+                        <i class="fas fa-circle text-cyber text-[6px] animate-pulse"></i>
+                    </span>
+                    <div class="flex gap-2">
+                        <i class="fas fa-terminal text-gray-600 text-xs"></i>
+                        <i class="fas fa-database text-gray-600 text-xs"></i>
+                    </div>
+                </div>
+                <div id="terminal"
+                    class="p-4 font-mono text-[11px] sm:text-xs text-gray-400 overflow-y-auto flex-1 whitespace-pre-wrap leading-relaxed bg-[linear-gradient(0deg,rgba(0,240,255,0.02)_1px,transparent_1px)] bg-[size:100%_2px]">
+                    <!-- Logs go here -->
+                </div>
+                <!-- Terminal scanline effect -->
+                <div
+                    class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-cyber/5 to-transparent pointer-events-none">
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Analytics & Telemetry -->
+        <div class="w-1/2 flex flex-col gap-4">
+
+            <!-- Phase Tracker with holographic effect -->
+            <div
+                class="bg-panelbg/90 backdrop-blur-sm rounded-xl p-4 glow-box shrink-0 flex flex-col justify-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-neon to-cyber-purple"></div>
+                <div class="absolute inset-0 holographic opacity-0 hover:opacity-100 transition-opacity"></div>
+                <label class="text-xs text-neon uppercase tracking-widest font-bold mb-3 block flex items-center gap-2">
+                    <i class="fas fa-chart-line"></i>
+                    W.A.K.E.E.L. Pipeline Phase
+                    <i class="fas fa-sync-alt text-[8px] animate-spin" style="animation-duration: 3s;"></i>
+                </label>
+                <div id="phase-banner"
+                    class="w-full bg-darkbg/80 border border-gray-800 rounded-lg p-4 text-center text-sm sm:text-lg font-black tracking-widest text-gray-600 transition-all duration-500 uppercase shadow-inner relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-cyber/0 via-cyber/10 to-cyber/0 animate-pulse">
+                    </div>
+                    AWAITING DIRECTIVE
+                </div>
+                <!-- Status indicators -->
+                <div class="flex justify-between mt-3 text-[8px] text-gray-600">
+                    <span><i class="fas fa-tachometer-alt"></i> THROUGHPUT: <span id="throughput">0</span> ops</span>
+                    <span><i class="fas fa-clock"></i> LATENCY: <span id="latency">0</span> ms</span>
+                    <span><i class="fas fa-microchip"></i> CORES: 8</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Pure PPA Chart with enhanced styling -->
+            <div
+                class="bg-panelbg/90 backdrop-blur-sm rounded-xl flex-1 p-4 glow-box flex flex-col relative overflow-hidden">
+                <div
+                    class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyber via-cyber-purple to-cyber-pink">
+                </div>
+                <label id="chart-title"
+                    class="text-xs text-purple-400 uppercase tracking-widest font-bold mb-4 block flex items-center gap-2">
+                    <i class="fas fa-chart-bar"></i>
+                    Silicon PPA Analytics (Awaiting Data)
+                </label>
+                <div
+                    class="flex-1 relative w-full h-full flex items-center justify-center bg-darkbg/50 rounded-lg border border-gray-800/50 p-2">
+                    <canvas id="metricsChart"></canvas>
+                </div>
+                <!-- Legend with icons -->
+                <div class="flex justify-center gap-4 mt-3 text-[10px]">
+                    <div class="flex items-center gap-1">
+                        <div class="w-2 h-2 bg-cyber rounded-full"></div><span class="text-gray-500">Performance</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div><span class="text-gray-500">Area</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <div class="w-2 h-2 bg-amber-500 rounded-full"></div><span class="text-gray-500">Power</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx2 = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrixArray = matrix.split("");
+
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx2.fillStyle = 'rgba(5, 5, 5, 0.04)';
+            ctx2.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx2.fillStyle = '#0f0';
+            ctx2.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx2.fillStyle = `rgba(0, 240, 255, ${Math.random() * 0.2})`;
+                ctx2.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Particle System
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'absolute rounded-full pointer-events-none';
+                particle.style.width = Math.random() * 3 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.backgroundColor = `rgba(0, 240, 255, ${Math.random() * 0.3})`;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${Math.random() * 10 + 5}s ease-in-out infinite`;
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        const runBtn = document.getElementById('runBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const terminal = document.getElementById('terminal');
+        const promptInput = document.getElementById('prompt');
+        const phaseBanner = document.getElementById('phase-banner');
+        const chartTitle = document.getElementById('chart-title');
+
+        // Metrics counters
+        let operationCount = 0;
+        let latencySum = 0;
+
+        let ws;
+
+        // --- PURE PPA CHART.JS SETUP with enhanced options---
+        const ctx = document.getElementById('metricsChart').getContext('2d');
+        const siliconChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Performance (GHz)', 'Logic Area (um²)', 'Total Power (mW)'],
+                datasets: [{
+                    label: 'PPA Metrics',
+                    data: [0, 0, 0],
+                    backgroundColor: [
+                        'rgba(0, 240, 255, 0.7)',
+                        'rgba(168, 85, 247, 0.7)',
+                        'rgba(245, 158, 11, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(0, 240, 255, 1)',
+                        'rgba(168, 85, 247, 1)',
+                        'rgba(245, 158, 11, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barPercentage: 0.65,
+                    categoryPercentage: 0.8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        type: 'logarithmic',
+                        grid: { color: 'rgba(0, 240, 255, 0.05)', drawBorder: false },
+                        ticks: { color: '#888', font: { family: 'monospace', size: 10 } },
+                        title: { display: true, text: 'Log Scale', color: '#666', font: { size: 9 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#aaa', font: { weight: 'bold', size: 11 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10,10,15,0.98)',
+                        titleColor: '#00f0ff',
+                        bodyColor: '#fff',
+                        borderColor: '#00f0ff',
+                        borderWidth: 1,
+                        padding: 12,
+                        bodyFont: { size: 12, weight: 'bold', family: 'monospace' },
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                let value = context.raw;
+                                if (context.dataIndex === 0) return `⚡ Performance: ${value.toFixed(2)} GHz`;
+                                if (context.dataIndex === 1) return `📐 Logic Area: ${value.toFixed(2)} µm²`;
+                                return `⚡ Total Power: ${value.toFixed(2)} mW`;
+                            }
+                        }
+                    }
+                },
+                animation: { duration: 1200, easing: 'easeOutElastic' }
+            }
+        });
+
+        // --- WEBSOCKET LOGIC with enhanced UI updates---
+        runBtn.addEventListener('click', () => {
+            const prompt = promptInput.value.trim();
+            if (!prompt) return;
+
+            operationCount++;
+            document.getElementById('throughput').innerText = operationCount;
+
+            const startTime = Date.now();
+
+            runBtn.disabled = true;
+            btnText.innerText = "W.A.K.E.E.L. Computing...";
+            btnSpinner.classList.remove('hidden');
+            terminal.innerHTML = '';
+            setUIStatus("ROUTING ACTIVE", "text-cyber", "bg-cyber shadow-[0_0_8px_#00f0ff] animate-pulse");
+            updatePhaseBanner("INITIALIZING W.A.K.E.E.L...", "border-cyber text-cyber shadow-[0_0_20px_rgba(0,240,255,0.2)] bg-cyber/5");
+
+            siliconChart.data.datasets[0].data = [0, 0, 0];
+            siliconChart.update();
+            chartTitle.innerHTML = '<i class="fas fa-chart-bar"></i> Silicon PPA Analytics (Awaiting Data)';
+
+            ws = new WebSocket("ws://127.0.0.1:8000/ws/run_eda");
+
+            ws.onopen = () => { ws.send(JSON.stringify({ prompt: prompt })); };
+
+            function appendLog(htmlString) {
+                terminal.insertAdjacentHTML('beforeend', htmlString);
+                while (terminal.childElementCount > 150) {
+                    terminal.removeChild(terminal.firstChild);
+                }
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data.message && data.message.includes("Manufacturing Mode")) {
+                    chartTitle.innerHTML = '<i class="fas fa-industry"></i> Silicon PPA Analytics (Google/SkyWater 130nm)';
+                    chartTitle.className = "text-xs text-blue-400 uppercase tracking-widest font-bold mb-4 block";
+                }
+                if (data.message && data.message.includes("Academic Mode")) {
+                    chartTitle.innerHTML = '<i class="fas fa-graduation-cap"></i> Silicon PPA Analytics (ASAP7 7nm FinFET)';
+                    chartTitle.className = "text-xs text-purple-400 uppercase tracking-widest font-bold mb-4 block";
+                }
+
+                if (data.type === "log" || data.type === "copilot") {
+                    let color = data.type === "copilot" ? "text-cyber font-bold tracking-wide" : "text-gray-500";
+                    let icon = data.type === "copilot" ? '<i class="fas fa-robot text-cyber mr-1"></i>' : '<i class="fas fa-terminal mr-1"></i>';
+                    appendLog(`<div class="${color} flex items-start gap-1">${icon}${data.message}</div>`);
+                }
+
+                if (data.type === "phase") {
+                    updatePhaseBanner(data.message, "border-neon text-neon shadow-[0_0_20px_rgba(57,255,20,0.2)] bg-neon/5");
+                    appendLog(`<div class="text-neon font-black mt-3 mb-3 pl-2 border-l-2 border-neon bg-neon/10 py-1"><i class="fas fa-arrow-right mr-2"></i>${data.message}</div>`);
+                }
+
+                if (data.type === "success") {
+                    appendLog(`<div class="text-green-400 font-bold"><i class="fas fa-check-circle mr-1"></i>${data.message}</div>`);
+
+                    if (data.message.includes("-> Performance")) {
+                        siliconChart.data.datasets[0].data[0] = parseFloat(data.message.split(":")[1].trim());
+                        siliconChart.update();
+                    }
+                    if (data.message.includes("-> Logic Area")) {
+                        siliconChart.data.datasets[0].data[1] = parseFloat(data.message.split(":")[1].trim());
+                        siliconChart.update();
+                    }
+                    if (data.message.includes("-> Total Power")) {
+                        let watts = parseFloat(data.message.split(":")[1].trim());
+                        siliconChart.data.datasets[0].data[2] = watts * 1000;
+                        siliconChart.update();
+                    }
+                }
+
+                if (data.type === "warning") {
+                    appendLog(`<div class="text-yellow-400 font-bold bg-yellow-400/10 p-1 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>${data.message}</div>`);
+                    if (data.message.includes("HEURISTICS") || data.message.includes("RESOURCE MODE") || data.message.startsWith("[KB:")) {
+                        updatePhaseBanner(data.message, "border-yellow-400 text-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.2)] bg-yellow-400/5 text-sm");
+                    }
+                }
+
+                if (data.type === "error") {
+                    appendLog(`<div class="text-red-500 font-bold bg-red-500/10 p-2 mt-2 border-l-2 border-red-500"><i class="fas fa-bug mr-1"></i>${data.message}</div>`);
+                    if (!data.message.includes("[SWEEP POINT FAILED]")) {
+                        setUIStatus("FATAL FAULT", "text-red-500", "bg-red-500 shadow-[0_0_8px_#ef4444]");
+                        updatePhaseBanner("PIPELINE CRASHED", "border-red-500 text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)] bg-red-500/5");
+                    }
+                }
+
+                if (data.type === "final" && data.status === "SUCCESS") {
+                    setUIStatus("W.A.K.E.E.L. STANDBY", "text-neon", "bg-neon shadow-[0_0_8px_#39ff14]");
+                    updatePhaseBanner("SILICON COMPILATION COMPLETE", "border-cyber text-cyber shadow-[0_0_20px_rgba(0,240,255,0.3)] bg-cyber/10");
+                    const latency = Date.now() - startTime;
+                    latencySum += latency;
+                    document.getElementById('latency').innerText = Math.round(latencySum / operationCount);
+                }
+
+                if (data.type === "finished") {
+                    runBtn.disabled = false;
+                    btnText.innerText = "Engage W.A.K.E.E.L.";
+                    btnSpinner.classList.add('hidden');
+                }
+            };
+
+            ws.onclose = () => {
+                if (runBtn.disabled) {
+                    runBtn.disabled = false;
+                    btnText.innerText = "Engage W.A.K.E.E.L.";
+                    btnSpinner.classList.add('hidden');
+                    setUIStatus("CONNECTION LOST", "text-red-500", "bg-red-500 shadow-[0_0_8px_#ef4444]");
+                }
+            };
+        });
+
+        function setUIStatus(text, textClass, dotClass) {
+            const statText = document.getElementById('status-val');
+            const statDot = document.getElementById('status-dot');
+            statText.innerText = text;
+            statText.className = `text-xs font-bold tracking-widest uppercase ${textClass}`;
+            statDot.className = `w-2.5 h-2.5 rounded-full ${dotClass}`;
+        }
+
+        function updatePhaseBanner(text, classes) {
+            phaseBanner.innerText = text;
+            phaseBanner.className = `w-full border rounded-lg p-4 text-center font-black tracking-widest transition-all duration-300 uppercase ${classes}`;
+        }
+
+        // Resize handler for matrix canvas
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+
+</html>
