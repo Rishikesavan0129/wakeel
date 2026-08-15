@@ -1,4 +1,4 @@
-Copyright 2026 [YOUR NAME HERE]
+Copyright 2026 Rishikesavan a.k.a Youness Yunair
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
