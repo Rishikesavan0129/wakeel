@@ -1,6 +1,12 @@
 # Wakeel — Agentic EDA Flow Orchestrator
 
+[![tests](https://github.com/Rishikesavan0129/wakeel/actions/workflows/tests.yml/badge.svg)](https://github.com/Rishikesavan0129/wakeel/actions/workflows/tests.yml)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
+[![python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](requirements.txt)
+
 **Prompt-driven, self-healing RTL-to-GDSII orchestration for OpenLane and OpenROAD-flow-scripts (ORFS).** Open source. Deterministic by default. No cloud API required.
+
+> **Validation status:** the orchestration/config-generation logic is unit-tested (see badge above) and has been exercised against design-tree structures matching real OpenLane/ORFS installs. Full flow-execution validation against a live toolchain (Docker + PDK) is tracked honestly in [`VALIDATION.md`](VALIDATION.md) — check there before assuming any specific claim (e.g. "self-heals a real LVS failure") has been proven end-to-end rather than just implemented.
 
 > "Run `wakeel_alu` at 200MHz on 130nm" → Wakeel finds the design, generates a schema-driven config, launches the real flow, and automatically corrects known failure signatures against real signoff tool output — without a human touching a config file mid-run.
 
@@ -118,9 +124,33 @@ index.html                  # dashboard
 
 Started because I wanted to run the ASAP7 predictive PDK without hand-editing `config.tcl`/`config.mk` every single time I changed a design or a target frequency. What began as a config-generation convenience turned into a genuine question: how much of physical-design flow babysitting can be handled deterministically, with real EDA tools as the final word on every decision?
 
+## Related work
+
+Wakeel is an orchestration/self-healing layer, not a parameter-search
+tool — if what you actually want is automated PPA hyperparameter search
+over ORFS, [OpenROAD AutoTuner](https://openroad-flow-scripts.readthedocs.io/en/latest/user/InstructionsForAutoTuner.html)
+already does that (Bayesian optimization / Optuna / grid search, Ray-distributed)
+and is the right tool for it — Wakeel doesn't try to replace it. Where
+Wakeel is different: it reads real signoff report files (`drc.rpt`,
+`lvs.rpt`, not just terminal exit codes) after a failure and proposes a
+diagnosed, explained config correction, rather than searching the
+parameter space blind against a PPA score. The two are complementary,
+not competing — an AutoTuner-style search loop for the OpenLane path
+specifically (which doesn't have one yet) is on the roadmap; see
+`CHANGELOG_v3.md`.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to run the test suite
+and where things live in the codebase, [`VALIDATION.md`](VALIDATION.md)
+for what's actually been proven against a real toolchain vs. only
+unit-tested, and [`SECURITY.md`](SECURITY.md) to report a vulnerability
+privately rather than as a public issue.
+
 ## License
 
-<!-- pick one consistent with OpenLane (Apache-2.0) and ORFS (BSD) dependencies -->
+Apache License 2.0 — see [`LICENSE.txt`](LICENSE.txt). Chosen for
+compatibility with OpenLane (Apache-2.0) and ORFS (BSD-3-Clause).
 
 ## Acknowledgments
 

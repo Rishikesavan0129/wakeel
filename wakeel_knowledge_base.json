@@ -604,7 +604,7 @@
         "user_project_wrapper LVS"
       ],
       "adjustments": {
-        "LVS_INSERT_POWER_PINS": 1
+        "LVS_INSERT_POWER_PINS": true
       },
       "config_params": {
         "OpenLane": {
@@ -629,8 +629,8 @@
         "logic cells in wrapper LVS mismatch"
       ],
       "adjustments": {
-        "PL_RESIZER_DESIGN_OPTIMIZATIONS": 0,
-        "GLB_RESIZER_DESIGN_OPTIMIZATIONS": 0
+        "PL_RESIZER_DESIGN_OPTIMIZATIONS": false,
+        "GLB_RESIZER_DESIGN_OPTIMIZATIONS": false
       },
       "config_params": {
         "OpenLane": {
@@ -1298,7 +1298,7 @@
         "gate oxide overstress"
       ],
       "adjustments": {
-        "RUN_CVC": 0
+        "RUN_CVC": false
       },
       "config_params": {
         "OpenLane": {

@@ -1,4 +1,8 @@
-fastapi
-uvicorn[standard]
-websockets
-httpx          # only used if WAKEEL_LOCAL_LLM_ENABLED=1
+# Pinned to compatible-release (~=) ranges rather than exact versions --
+# lets patch releases through automatically, blocks accidental
+# minor/major-version breakage. Re-run `pip index versions <pkg>` and
+# bump the ranges deliberately when you actually want to move up.
+fastapi~=0.141.1
+uvicorn[standard]~=0.52.4
+websockets~=17.1
+httpx~=0.28.1   # only used if WAKEEL_LOCAL_LLM_ENABLED=1

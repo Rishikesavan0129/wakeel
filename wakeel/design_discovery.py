@@ -9,6 +9,7 @@ import difflib
 import glob
 import os
 import re
+import shutil
 from dataclasses import dataclass, field
 
 
@@ -21,6 +22,7 @@ class DesignInfo:
     src_dir: str                # full path to its src/ folder
     v_files: list = field(default_factory=list)
     saif_file: str | None = None
+    vcd_file: str | None = None
     top_module: str | None = None
     existing_config_path: str | None = None  # config.tcl or config.mk, if present
     match_score: float = 1.0    # 1.0 = exact match, lower = fuzzy
@@ -42,6 +44,16 @@ class DesignSearch:
 
     def _orfs_designs_root(self) -> str:
         return os.path.join(self.orfs_path, "flow", "designs", "asap7")
+
+    # Public accessors for the two canonical roots -- used by
+    # orchestrator.py's auto-stage path (see stage_design() below) so it
+    # doesn't reach into "private"-by-convention methods from outside the
+    # class.
+    def openlane_designs_root(self) -> str:
+        return self._openlane_designs_root()
+
+    def orfs_designs_root(self) -> str:
+        return self._orfs_designs_root()
 
     def _candidate_roots(self) -> list[tuple[str, str]]:
         roots = [
@@ -135,6 +147,13 @@ class DesignSearch:
         )
         saif_matches = glob.glob(os.path.join(design_dir, "**", "*.saif"), recursive=True)
         saif_file = saif_matches[0] if saif_matches else None
+        # v3: same discovery pattern for VCD activity dumps -- SAIF is
+        # preferred when both exist (smaller, purpose-built for power
+        # analysis; see build_power_analysis_tcl's docstring), but a VCD is
+        # a perfectly valid activity source and shouldn't be ignored just
+        # because Wakeel only used to look for SAIF.
+        vcd_matches = glob.glob(os.path.join(design_dir, "**", "*.vcd"), recursive=True)
+        vcd_file = vcd_matches[0] if vcd_matches else None
 
         existing_config = None
         candidate = os.path.join(design_dir, "config.tcl" if engine == "openlane" else "config.mk")
@@ -145,7 +164,7 @@ class DesignSearch:
 
         return DesignInfo(
             name=name, engine=engine, root=root, design_dir=design_dir, src_dir=src_dir,
-            v_files=v_files, saif_file=saif_file, top_module=top_module,
+            v_files=v_files, saif_file=saif_file, vcd_file=vcd_file, top_module=top_module,
             existing_config_path=existing_config, match_score=score,
         )
 
@@ -186,3 +205,99 @@ class DesignSearch:
                 params[key] = val
 
         return params
+
+
+# ==========================================================================
+# Loose-RTL auto-discovery + staging (v3)
+# ==========================================================================
+# Real incident this addresses: a design can exist as source files under a
+# personal project folder -- never organized into either engine's proper
+# design-folder layout at all -- and DesignSearch.find() above only ever
+# looks inside the two canonical tool roots plus explicitly registered
+# extra_roots (each of which is still expected to look like a real design
+# folder, with a src/ dir and optionally an existing config). This is a
+# SEPARATE, narrower search: scanning a short, user-specified list of
+# project folders for a bare .v/.sv file matching a query by name, with no
+# expectation of any design-folder structure around it at all.
+#
+# Deliberately NOT a whole-filesystem crawl (not even just $HOME) -- an
+# unbounded search is slow, and on a real WSL/Linux box will walk into
+# unrelated tool caches, node_modules trees, and (worse) /mnt/c, none of
+# which should be silently scanned just because a design name didn't
+# resolve. The caller passes an explicit list (WAKEEL_RTL_SEARCH_ROOTS in
+# orchestrator.py) -- the user's own choice of "these are my project
+# folders", not a guess Wakeel makes on its own.
+
+_RTL_SCAN_SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv",
+                        ".ciel", "runs", "results", "tmp", ".tox"}
+_RTL_SCAN_FILE_CAP = 20000  # safety cap even within an explicit root list
+
+
+def find_loose_rtl(query: str, search_roots: list[str]) -> str | None:
+    """Best-effort search for a standalone .v/.sv file whose filename
+    (minus extension) matches `query`, across `search_roots` only -- see
+    the module-level note above for why this is intentionally bounded.
+    Returns the single best-matching file's absolute path, or None if
+    nothing in the given roots matches closely enough.
+    """
+    query_norm = DesignSearch._norm(query)
+    if not query_norm:
+        return None
+
+    candidates: list[tuple[float, str]] = []
+    scanned = 0
+    for root in search_roots:
+        if not root or not os.path.isdir(root):
+            continue
+        for dirpath, dirnames, filenames in os.walk(root):
+            dirnames[:] = [d for d in dirnames if d not in _RTL_SCAN_SKIP_DIRS and not d.startswith(".")]
+            for fname in filenames:
+                if not (fname.endswith(".v") or fname.endswith(".sv")):
+                    continue
+                scanned += 1
+                if scanned > _RTL_SCAN_FILE_CAP:
+                    return _best_rtl_candidate(candidates)
+                stem_norm = DesignSearch._norm(os.path.splitext(fname)[0])
+                if not stem_norm:
+                    continue
+                if stem_norm == query_norm or query_norm in stem_norm or stem_norm in query_norm:
+                    ratio = difflib.SequenceMatcher(None, query_norm, stem_norm).ratio()
+                    candidates.append((ratio, os.path.join(dirpath, fname)))
+
+    return _best_rtl_candidate(candidates)
+
+
+def _best_rtl_candidate(candidates: list[tuple[float, str]]) -> str | None:
+    if not candidates:
+        return None
+    candidates.sort(key=lambda c: c[0], reverse=True)
+    return candidates[0][1]
+
+
+def stage_design(engine_root: str, name: str, rtl_path: str) -> str:
+    """Copies a loose RTL file found via find_loose_rtl() into a proper
+    <engine_root>/<name>/src/ folder, so the NEXT DesignSearch.find() call
+    picks it up exactly like any other design folder -- no existing config
+    is written here, so the normal schema-driven config generation runs
+    fresh for it, same as any brand-new design.
+
+    Copies the file (never references the original in place) -- so a run
+    can never mutate or depend on something living outside Wakeel's own
+    working tree. Refuses outright if a folder already exists for `name`
+    under this engine root, rather than merging into it, since silently
+    writing into a folder that might already hold something unrelated is
+    exactly the kind of surprise this project has been trying to remove.
+
+    Returns the design_dir it created.
+    """
+    design_dir = os.path.join(engine_root, name)
+    if os.path.exists(design_dir):
+        raise FileExistsError(
+            f"'{design_dir}' already exists -- refusing to auto-stage into it. "
+            f"(If this is stale, remove it manually first; Wakeel won't do that for you.)"
+        )
+    src_dir = os.path.join(design_dir, "src")
+    os.makedirs(src_dir, exist_ok=False)
+    dest = os.path.join(src_dir, os.path.basename(rtl_path))
+    shutil.copy2(rtl_path, dest)
+    return design_dir

@@ -1,680 +1,894 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W.A.K.E.E.L. | YUNAIR Empire</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for the Analytics Graph -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Font Awesome for extra icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        cyber: '#00f0ff',
-                        neon: '#39ff14',
-                        darkbg: '#0a0a0f',
-                        panelbg: '#12121c',
-                        'cyber-purple': '#b721ff',
-                        'cyber-pink': '#ff006e'
-                    },
-                    animation: {
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'glow': 'glow 2s ease-in-out infinite',
-                        'scan': 'scan 3s linear infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'flicker': 'flicker 3s infinite'
-                    },
-                    keyframes: {
-                        glow: {
-                            '0%, 100%': { textShadow: '0 0 5px #00f0ff, 0 0 10px #00f0ff' },
-                            '50%': { textShadow: '0 0 20px #00f0ff, 0 0 30px #00f0ff' }
-                        },
-                        scan: {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(100%)' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        },
-                        flicker: {
-                            '0%, 100%': { opacity: 1 },
-                            '50%': { opacity: 0.3 }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Custom Terminal Scrollbar */
-        #terminal::-webkit-scrollbar {
-            width: 8px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wakeel — EDA Flow Orchestrator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root, [data-theme="dark"]{
+    --graphite-950:#07090c;
+    --graphite-900:#10141a;
+    --graphite-850:#141a21;
+    --graphite-800:#1d2530;
+    --graphite-700:#2a3542;
+    --fg-100:#e7edf2;
+    --fg-500:#889bab;
+    --fg-600:#5f7182;
+    --signal:#4fd1c5;
+    --signal-2:#5ec8f2;
+    --signal-dim:rgba(79,209,197,0.16);
+    --ok:#52e0a0;
+    --ok-dim:rgba(82,224,160,0.12);
+    --warn:#ecb75f;
+    --warn-dim:rgba(236,183,95,0.12);
+    --fail:#f16a70;
+    --fail-dim:rgba(241,106,112,0.12);
+    --radius:4px;
+    --bg-texture:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(79,209,197,0.07), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(94,200,242,0.05), transparent 60%),
+      repeating-linear-gradient(180deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    --glow-strength:1;
+    --panel-shadow:inset 0 0 24px rgba(0,0,0,0.35);
+  }
 
-        #terminal::-webkit-scrollbar-track {
-            background: #0a0a0f;
-        }
+  /* "Blueprint" day theme -- pale engineering-schematic paper with a
+     drafting grid, not a generic inverted dark theme. Glows are dropped
+     in favor of crisp borders (a glow reads as "screen"; a fine ruled
+     line reads as "drafted"), which is the actual design intent here. */
+  [data-theme="light"]{
+    --graphite-950:#eef2f6;
+    --graphite-900:#ffffff;
+    --graphite-850:#f3f6f9;
+    --graphite-800:#d7dfe6;
+    --graphite-700:#b7c2cc;
+    --fg-100:#1a2530;
+    --fg-500:#526270;
+    --fg-600:#788793;
+    --signal:#0e8e82;
+    --signal-2:#1c72b8;
+    --signal-dim:rgba(14,142,130,0.14);
+    --ok:#1f9d64;
+    --ok-dim:rgba(31,157,100,0.12);
+    --warn:#a86c14;
+    --warn-dim:rgba(168,108,20,0.12);
+    --fail:#c4383f;
+    --fail-dim:rgba(196,56,63,0.1);
+    --radius:4px;
+    --bg-texture:
+      repeating-linear-gradient(0deg, rgba(14,142,130,0.05) 0px, rgba(14,142,130,0.05) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(90deg, rgba(14,142,130,0.05) 0px, rgba(14,142,130,0.05) 1px, transparent 1px, transparent 32px);
+    --glow-strength:0;
+    --panel-shadow:none;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--bg-texture), var(--graphite-950);
+    color:var(--fg-100);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    font-size:14px;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color 0.2s ease, color 0.2s ease;
+  }
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+  ::selection{background:var(--signal-dim);}
+  a{color:var(--signal);}
 
-        #terminal::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 4px;
-        }
+  button:focus-visible, textarea:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--signal);
+    outline-offset:2px;
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
 
-        #terminal::-webkit-scrollbar-thumb:hover {
-            background: #00f0ff;
-        }
+  header{
+    border-bottom:1px solid var(--graphite-800);
+    padding:16px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    background:linear-gradient(180deg, rgba(79,209,197,0.04), transparent);
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand-mark{
+    font-family:'IBM Plex Mono';font-weight:700;font-size:16px;letter-spacing:0.22em;
+    color:var(--fg-100);
+    text-shadow:0 0 18px rgba(79,209,197,0.45);
+  }
+  .brand-sub{color:var(--fg-500);font-size:12px;letter-spacing:0.02em;}
+  .status-pill{
+    display:flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--fg-500);
+    border:1px solid var(--graphite-800);
+    border-radius:999px;
+    padding:5px 14px 5px 10px;
+    background:rgba(255,255,255,0.015);
+  }
+  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--fg-600);flex-shrink:0;position:relative;}
+  .status-dot.active{background:var(--signal);box-shadow:0 0 0 3px var(--signal-dim), 0 0 10px rgba(79,209,197,0.7);animation:pulse-ring 1.6s ease-in-out infinite;}
+  .status-dot.ok{background:var(--ok);box-shadow:0 0 0 3px var(--ok-dim), 0 0 8px rgba(82,224,160,0.6);}
+  .status-dot.fail{background:var(--fail);box-shadow:0 0 0 3px var(--fail-dim), 0 0 8px rgba(241,106,112,0.6);}
+  @keyframes pulse-ring{
+    0%,100%{box-shadow:0 0 0 3px var(--signal-dim), 0 0 10px rgba(79,209,197,0.7);}
+    50%{box-shadow:0 0 0 6px transparent, 0 0 16px rgba(79,209,197,0.9);}
+  }
 
-        .glow-box {
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.05);
-            border: 1px solid rgba(0, 240, 255, 0.15);
-        }
+  main{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:16px;
+    padding:18px;
+    max-width:1440px;
+    margin:0 auto;
+    align-items:start;
+  }
+  @media (max-width:900px){ main{grid-template-columns:1fr;} }
 
-        /* Matrix Rain Effect */
-        .matrix-rain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.03;
-        }
+  /* --- HUD panel with corner brackets --- */
+  .panel{
+    position:relative;
+    background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent 40%), var(--graphite-900);
+    border:1px solid var(--graphite-800);
+    border-radius:var(--radius);
+    padding:18px 16px 16px;
+  }
+  .panel::before, .panel::after,
+  .panel .corner-br, .panel .corner-bl{
+    content:'';
+    position:absolute;
+    width:10px;height:10px;
+    pointer-events:none;
+  }
+  .panel::before{ top:-1px; left:-1px; border-top:2px solid var(--signal); border-left:2px solid var(--signal); opacity:0.65;}
+  .panel::after{ top:-1px; right:-1px; border-top:2px solid var(--signal); border-right:2px solid var(--signal); opacity:0.65;}
+  .panel .corner-bl{ bottom:-1px; left:-1px; border-bottom:2px solid var(--graphite-700); border-left:2px solid var(--graphite-700);}
+  .panel .corner-br{ bottom:-1px; right:-1px; border-bottom:2px solid var(--graphite-700); border-right:2px solid var(--graphite-700);}
+  .panel + .panel{margin-top:16px;}
+  .panel-label{
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--fg-500);margin:0 0 12px 0;display:flex;align-items:center;justify-content:space-between;
+  }
+  .panel-label::before{
+    content:'//';color:var(--signal);margin-right:7px;opacity:0.8;
+  }
 
-        /* Glitch effect for header */
-        .glitch-text {
-            position: relative;
-            animation: glitch 3s infinite;
-        }
+  label.field-label{
+    display:block;font-size:11.5px;color:var(--fg-500);margin-bottom:6px;letter-spacing:0.02em;
+  }
+  textarea, input[type=text], input[type=number]{
+    width:100%;
+    background:var(--graphite-850);
+    border:1px solid var(--graphite-800);
+    border-radius:var(--radius);
+    color:var(--fg-100);
+    font-family:'IBM Plex Mono';
+    font-size:12.5px;
+    padding:9px 10px;
+    resize:none;
+  }
+  textarea:focus, input:focus{border-color:var(--signal);box-shadow:0 0 0 1px var(--signal-dim), 0 0 10px rgba(79,209,197,0.15);}
+  textarea::placeholder, input::placeholder{color:var(--fg-600);}
 
-        @keyframes glitch {
+  .tabgroup{display:flex;gap:2px;background:var(--graphite-850);border:1px solid var(--graphite-800);border-radius:var(--radius);padding:2px;margin-bottom:10px;}
+  .tabgroup button{
+    flex:1;background:transparent;border:none;color:var(--fg-500);
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:0.05em;text-transform:uppercase;
+    padding:6px 4px;border-radius:3px;cursor:pointer;
+  }
+  .tabgroup button.active{background:var(--graphite-800);color:var(--signal);box-shadow:0 0 8px rgba(79,209,197,0.18) inset;}
 
-            0%,
-            100% {
-                text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff;
-            }
+  .sweep-panel{display:none;flex-direction:column;gap:8px;margin-bottom:10px;}
+  .sweep-panel.visible{display:flex;}
+  .sweep-range-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+  .sweep-range-row div span{display:block;font-size:10px;color:var(--fg-600);margin-bottom:3px;}
 
-            33% {
-                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
-            }
+  .advanced-toggle{
+    display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+    font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--fg-600);margin:14px 0 10px;
+  }
+  .advanced-toggle:hover{color:var(--fg-500);}
+  .advanced-toggle .chev{transition:transform 0.15s ease;display:inline-block;color:var(--signal);}
+  .advanced-toggle.open .chev{transform:rotate(90deg);}
+  .advanced-panel{display:none;flex-direction:column;gap:10px;margin-bottom:6px;}
+  .advanced-panel.open{display:flex;}
+  .knob-row{display:grid;grid-template-columns:1fr 90px;gap:8px;align-items:center;}
+  .knob-row .field-label{margin-bottom:0;}
+  .knob-hint{color:var(--fg-600);font-size:10.5px;line-height:1.5;margin:-4px 0 0;}
 
-            66% {
-                text-shadow: 2px 0 #00ffff, -2px 0 #ff00ff;
-            }
-        }
+  .run-btn{
+    flex:1;
+    background:linear-gradient(135deg, var(--signal), var(--signal-2));
+    color:#04151a;
+    border:none;
+    border-radius:var(--radius);
+    font-family:'IBM Plex Mono';
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:12px;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:filter 0.15s ease, box-shadow 0.15s ease;
+    box-shadow:0 0 18px rgba(79,209,197,0.25);
+  }
+  .run-btn:hover:not(:disabled){filter:brightness(1.1);box-shadow:0 0 26px rgba(79,209,197,0.4);}
+  .run-btn:disabled{background:var(--graphite-700);color:var(--fg-600);cursor:not-allowed;box-shadow:none;}
+  .run-hint{color:var(--fg-600);font-size:11px;margin-top:8px;line-height:1.5;}
 
-        /* Hexagon pattern overlay */
-        .hex-bg {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L55 20 L55 40 L30 55 L5 40 L5 20 Z' fill='none' stroke='rgba(0,240,255,0.03)' stroke-width='1'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 30px;
-        }
+  .spinner{width:13px;height:13px;border:2px solid rgba(4,21,26,0.35);border-top-color:#04151a;border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+  .spinner.visible{display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 
-        /* Pulse ring animation for status */
-        .pulse-ring {
-            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
+  .stop-btn{
+    width:44px;flex-shrink:0;
+    background:transparent;
+    border:1px solid var(--fail);
+    color:var(--fail);
+    border-radius:var(--radius);
+    font-size:13px;
+    cursor:pointer;
+    transition:background 0.15s ease, box-shadow 0.15s ease;
+  }
+  .stop-btn:hover:not(:disabled){background:var(--fail-dim);box-shadow:0 0 12px rgba(241,106,112,0.25);}
+  .stop-btn:disabled{border-color:var(--graphite-800);color:var(--graphite-700);cursor:not-allowed;}
 
-        @keyframes pulse-ring {
-            0% {
-                box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7);
-            }
+  .status-dot.stopped{background:var(--warn);box-shadow:0 0 0 3px var(--warn-dim), 0 0 8px rgba(236,183,95,0.6);}
 
-            70% {
-                box-shadow: 0 0 0 10px rgba(0, 240, 255, 0);
-            }
+  .stat-row{display:flex;justify-content:space-between;font-size:12px;color:var(--fg-500);padding:6px 0;border-top:1px solid var(--graphite-800);}
+  .stat-row:first-child{border-top:none;}
+  .stat-row b{color:var(--fg-100);font-family:'IBM Plex Mono';font-weight:500;text-shadow:0 0 8px rgba(79,209,197,0.25);}
 
-            100% {
-                box-shadow: 0 0 0 0 rgba(0, 240, 255, 0);
-            }
-        }
+  /* --- signature element: sweep-point rail --- */
+  .rail-wrap{overflow-x:auto;padding-bottom:4px;}
+  .rail{display:flex;align-items:center;gap:0;min-width:min-content;}
+  .rail-point{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:74px;}
+  .rail-tick{
+    width:11px;height:11px;border-radius:50%;
+    background:var(--graphite-800);border:2px solid var(--graphite-700);
+    transition:all 0.2s ease;
+  }
+  .rail-point.active .rail-tick{background:var(--signal);border-color:var(--signal);box-shadow:0 0 0 4px var(--signal-dim), 0 0 12px rgba(79,209,197,0.8);animation:rail-pulse 1.2s ease-in-out infinite;}
+  @keyframes rail-pulse{0%,100%{box-shadow:0 0 0 4px var(--signal-dim), 0 0 12px rgba(79,209,197,0.8);} 50%{box-shadow:0 0 0 7px transparent, 0 0 18px rgba(79,209,197,1);}}
+  .rail-point.success .rail-tick{background:var(--ok);border-color:var(--ok);box-shadow:0 0 8px rgba(82,224,160,0.5);}
+  .rail-point.failed .rail-tick{background:var(--fail);border-color:var(--fail);box-shadow:0 0 8px rgba(241,106,112,0.5);}
+  .rail-line{flex:1;height:2px;background:var(--graphite-800);min-width:20px;}
+  .rail-line.done{background:linear-gradient(90deg, var(--signal), var(--graphite-700));opacity:0.5;}
+  .rail-freq{font-family:'IBM Plex Mono';font-size:10px;color:var(--fg-600);margin-top:6px;}
+  .rail-point.active .rail-freq{color:var(--signal);}
+  .rail-point.success .rail-freq{color:var(--ok);}
+  .rail-point.failed .rail-freq{color:var(--fail);}
+  .rail-phase-label{
+    font-family:'IBM Plex Mono';font-size:12px;color:var(--fg-100);margin-top:14px;
+    padding-top:12px;border-top:1px solid var(--graphite-800);
+    letter-spacing:0.02em;
+  }
+  .rail-empty{color:var(--fg-600);font-size:12px;}
 
-        /* Neon border animation */
-        .neon-border {
-            position: relative;
-            overflow: hidden;
-        }
+  /* --- log stream --- */
+  #terminal{
+    background:var(--graphite-850);
+    border:1px solid var(--graphite-800);
+    border-radius:var(--radius);
+    height:340px;
+    overflow-y:auto;
+    padding:10px 12px;
+    font-family:'IBM Plex Mono';
+    font-size:11.5px;
+    line-height:1.65;
+    box-shadow:inset 0 0 24px rgba(0,0,0,0.35);
+  }
+  #terminal::-webkit-scrollbar{width:8px;}
+  #terminal::-webkit-scrollbar-thumb{background:var(--graphite-700);border-radius:4px;}
+  .log-line{padding:1px 0 1px 9px;border-left:2px solid transparent;color:var(--fg-500);white-space:pre-wrap;word-break:break-word;}
+  .log-line.copilot{color:var(--signal);border-left-color:var(--signal);text-shadow:0 0 6px rgba(79,209,197,0.35);}
+  .log-line.phase{color:var(--fg-100);font-weight:600;border-left-color:var(--fg-100);margin-top:6px;}
+  .log-line.success{color:var(--ok);border-left-color:var(--ok);}
+  .log-line.warning{color:var(--warn);border-left-color:var(--warn);}
+  .log-line.error{color:var(--fail);border-left-color:var(--fail);}
+  .log-line .tag{color:var(--fg-600);margin-right:6px;}
 
-        .neon-border::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #00f0ff, #b721ff, #ff006e, #00f0ff);
-            background-size: 400%;
-            border-radius: inherit;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
+  /* --- results table --- */
+  table.results{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono';font-size:12px;}
+  table.results th{
+    text-align:right;color:var(--fg-600);font-weight:500;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+    padding:6px 8px;border-bottom:1px solid var(--graphite-800);
+  }
+  table.results th:first-child{text-align:left;}
+  table.results td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--graphite-800);color:var(--fg-100);font-variant-numeric:tabular-nums;}
+  table.results td:first-child{text-align:left;color:var(--fg-500);}
+  table.results tr:last-child td{border-bottom:none;}
+  .status-badge{font-size:10px;padding:2px 7px;border-radius:3px;letter-spacing:0.05em;}
+  .status-badge.SUCCESS{background:var(--ok-dim);color:var(--ok);box-shadow:0 0 6px rgba(82,224,160,0.2);}
+  .status-badge.FAILED{background:var(--fail-dim);color:var(--fail);box-shadow:0 0 6px rgba(241,106,112,0.2);}
+  .status-badge.PENDING{background:var(--graphite-800);color:var(--fg-600);}
+  .results-empty{color:var(--fg-600);font-size:12px;padding:20px 0;text-align:center;}
 
-        .neon-border:hover::before {
-            opacity: 0.3;
-            animation: border-rotate 3s linear infinite;
-        }
+  .chart-wrap{height:190px;margin-top:14px;}
 
-        @keyframes border-rotate {
-            0% {
-                background-position: 0% 50%;
-            }
+  footer{max-width:1440px;margin:0 auto;padding:8px 22px 22px;color:var(--fg-600);font-size:11px;letter-spacing:0.02em;}
 
-            50% {
-                background-position: 100% 50%;
-            }
+  /* --- day theme overrides: same shapes, glow traded for crisp edges --- */
+  [data-theme="light"] .brand-mark{text-shadow:none;}
+  [data-theme="light"] .status-dot.active{box-shadow:0 0 0 3px var(--signal-dim);animation:none;}
+  [data-theme="light"] .status-dot.ok{box-shadow:0 0 0 3px var(--ok-dim);}
+  [data-theme="light"] .status-dot.fail{box-shadow:0 0 0 3px var(--fail-dim);}
+  [data-theme="light"] textarea:focus, [data-theme="light"] input:focus{box-shadow:0 0 0 1px var(--signal-dim);}
+  [data-theme="light"] .tabgroup button.active{box-shadow:none;}
+  [data-theme="light"] .run-btn{box-shadow:0 1px 2px rgba(20,40,50,0.15);}
+  [data-theme="light"] .run-btn:hover:not(:disabled){box-shadow:0 2px 6px rgba(20,40,50,0.2);}
+  [data-theme="light"] .stat-row b{text-shadow:none;}
+  [data-theme="light"] .rail-point.active .rail-tick{box-shadow:0 0 0 4px var(--signal-dim);animation:none;}
+  [data-theme="light"] .rail-point.success .rail-tick, [data-theme="light"] .rail-point.failed .rail-tick{box-shadow:none;}
+  [data-theme="light"] #terminal{box-shadow:none;}
+  [data-theme="light"] .log-line.copilot{text-shadow:none;}
+  [data-theme="light"] .status-badge.SUCCESS, [data-theme="light"] .status-badge.FAILED{box-shadow:none;}
+  [data-theme="light"] .panel::before, [data-theme="light"] .panel::after{opacity:0.85;}
+  [data-theme="light"] .stop-btn:hover:not(:disabled){box-shadow:none;}
 
-            100% {
-                background-position: 0% 50%;
-            }
-        }
+  /* --- theme toggle button --- */
+  .theme-toggle{
+    display:flex;align-items:center;justify-content:center;
+    width:28px;height:28px;border-radius:50%;
+    background:transparent;border:1px solid var(--graphite-800);
+    color:var(--fg-500);cursor:pointer;font-size:13px;line-height:1;
+    transition:border-color 0.15s ease, color 0.15s ease;
+  }
+  .theme-toggle:hover{border-color:var(--signal);color:var(--signal);}
 
-        /* Data stream effect */
-        .data-stream {
-            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
-            animation: stream 2s linear infinite;
-        }
-
-        @keyframes stream {
-            0% {
-                transform: translateX(-100%);
-            }
-
-            100% {
-                transform: translateX(200%);
-            }
-        }
-
-        /* Holographic effect for phase banner */
-        .holographic {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(57, 255, 20, 0.05) 100%);
-            backdrop-filter: blur(5px);
-        }
-
-        /* Custom button hover effect */
-        .cyber-button {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cyber-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(0, 240, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .cyber-button:hover::after {
-            width: 300px;
-            height: 300px;
-        }
-    </style>
+  /* --- monogram badge --- */
+  .monogram{
+    width:30px;height:30px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .monogram svg{width:100%;height:100%;display:block;}
+  .byline{color:var(--fg-600);font-size:10.5px;letter-spacing:0.03em;margin-top:1px;}
+  .byline b{color:var(--fg-500);font-weight:500;}
+</style>
 </head>
+<body>
 
-<body
-    class="bg-[#050505] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] text-gray-200 font-sans h-screen flex flex-col overflow-hidden relative hex-bg">
-
-    <!-- Enhanced Matrix Rain Canvas -->
-    <canvas id="matrixCanvas" class="matrix-rain"></canvas>
-
-    <!-- Floating Particles -->
-    <div id="particles"></div>
-
-    <!-- Glowing Orb Effects with animation -->
-    <div
-        class="absolute top-0 left-0 right-0 h-96 bg-cyan-900/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float">
+<header>
+  <div class="brand">
+    <span class="monogram" aria-hidden="true">
+      <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 8V2H8" fill="none" stroke="var(--signal)" stroke-width="1.6"/>
+        <path d="M28 8V2H22" fill="none" stroke="var(--signal)" stroke-width="1.6"/>
+        <path d="M2 22V28H8" fill="none" stroke="var(--graphite-700)" stroke-width="1.6"/>
+        <path d="M28 22V28H22" fill="none" stroke="var(--graphite-700)" stroke-width="1.6"/>
+        <text x="15" y="20" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="700" font-size="14" fill="var(--fg-100)">Y</text>
+      </svg>
+    </span>
+    <div>
+      <div style="display:flex;align-items:baseline;gap:10px;">
+        <span class="brand-mark">WAKEEL</span>
+        <span class="brand-sub">agentic EDA flow orchestrator — OpenLane / ORFS</span>
+      </div>
+      <div class="byline">by <b>Youness Yunair</b></div>
     </div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-900/20 blur-[120px] rounded-full pointer-events-none z-0 animate-float"
-        style="animation-delay: -3s;"></div>
-
-    <!-- Data Stream overlay -->
-    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div
-            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber to-transparent data-stream">
-        </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="theme-toggle" id="themeToggle" title="Toggle day/night theme" aria-label="Toggle day/night theme">◐</button>
+    <div class="status-pill">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">Idle</span>
     </div>
+  </div>
+</header>
 
-    <!-- Header: W.A.K.E.E.L. Branding with glitch effect -->
-    <header
-        class="bg-panelbg/80 backdrop-blur-sm border-b border-gray-800 p-4 flex justify-between items-center z-10 glow-box relative">
-        <div class="absolute inset-0 bg-gradient-to-r from-cyber/5 to-transparent pointer-events-none"></div>
-        <div class="flex items-center gap-4">
-            <!-- YUNAIR Logo with pulse effect -->
-            <div
-                class="w-12 h-12 rounded-md border border-cyber flex items-center justify-center shadow-[0_0_12px_#00f0ff] bg-black/50 overflow-hidden p-1 pulse-ring">
-                <img src="yunair_logo.png" alt="YUNAIR Logo" class="w-full h-full object-contain"
-                    onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-cyber font-black text-xl tracking-tighter animate-pulse\'>W</span>';" />
-            </div>
-            <div>
-                <h1
-                    class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyper via-cyber-purple to-cyber-pink glitch-text">
-                    W.A.K.E.E.L.
-                </h1>
-                <p
-                    class="text-[10px] tracking-[0.2em] text-gray-500 uppercase font-bold mt-[-2px] flex items-center gap-1">
-                    <i class="fas fa-microchip text-cyber text-[8px]"></i>
-                    A Yunair Empire Tool
-                    <i class="fas fa-bolt text-neon text-[8px] ml-1"></i>
-                </p>
-            </div>
+<main>
+  <!-- LEFT: control column -->
+  <div>
+    <div class="panel">
+      <span class="corner-bl"></span><span class="corner-br"></span>
+      <p class="panel-label">Run configuration</p>
+
+      <label class="field-label" for="prompt">Directive</label>
+      <textarea id="prompt" rows="3" placeholder="e.g. run hafiz_core on 7nm, full flow"></textarea>
+
+      <div style="margin-top:14px;">
+        <label class="field-label" style="margin-bottom:8px;">Engine / tech node</label>
+        <div class="engine-tabgroup">
+        <div class="tabgroup" role="tablist">
+          <button type="button" class="active" data-engine="">Auto (from prompt)</button>
+          <button type="button" data-engine="orfs">ORFS · 7nm</button>
+          <button type="button" data-engine="openlane">OpenLane · 130nm</button>
         </div>
-        <div
-            class="flex items-center gap-3 bg-black/60 backdrop-blur px-4 py-2 rounded-full border border-gray-800 relative">
-            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyber/10 to-neon/10"></div>
-            <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-gray-500 shadow-[0_0_5px_#6b7280] relative">
-                <div class="absolute inset-0 rounded-full animate-ping opacity-75" style="background: currentColor;">
-                </div>
-            </div>
-            <span id="status-val" class="text-xs font-bold tracking-widest text-gray-400 uppercase">SYSTEM IDLE</span>
-            <i class="fas fa-shield-alt text-cyber/50 text-xs"></i>
         </div>
-    </header>
+        <p class="run-hint" style="margin:0;">
+          "Auto" trusts whatever the directive text implies. Pick one explicitly to skip that guess entirely --
+          this also fixes a real issue where a design that only exists under one engine's folder can silently
+          run there even if the prompt asked for the other.
+        </p>
+      </div>
 
-    <!-- Main Workspace -->
-    <div class="flex flex-1 p-4 gap-4 h-full overflow-hidden relative z-10">
-
-        <!-- LEFT COLUMN: Terminal & Controls -->
-        <div class="w-1/2 flex flex-col gap-4">
-
-            <!-- Command Input with enhanced styling -->
-            <div
-                class="bg-panelbg/90 backdrop-blur-sm rounded-xl p-4 glow-box shrink-0 relative overflow-hidden neon-border">
-                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-cyber to-cyber-purple"></div>
-                <div class="absolute top-0 right-0 w-32 h-32 bg-cyber/5 rounded-full blur-3xl"></div>
-                <label
-                    class="text-xs text-cyber uppercase tracking-widest font-bold mb-2 block ml-2 flex items-center gap-2">
-                    <i class="fas fa-terminal"></i>
-                    Agentic Command Directive
-                    <i class="fas fa-chevron-right text-[8px] animate-pulse"></i>
-                </label>
-                <textarea id="prompt" rows="3"
-                    class="w-full bg-darkbg/90 border border-gray-800 rounded-lg p-3 text-sm text-gray-100 focus:outline-none focus:border-cyber focus:ring-2 focus:ring-cyber/20 transition-all resize-none shadow-inner"
-                    placeholder="⚡ e.g., Run a sweep on hafiz_core at 2 GHz, 3 GHz, and 4 GHz on 7nm..."></textarea>
-                <button id="runBtn"
-                    class="cyber-button mt-3 w-full bg-gradient-to-r from-cyber/20 via-cyber to-cyber-purple hover:from-cyber/30 hover:via-cyber hover:to-cyber-purple text-white font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] flex items-center justify-center gap-2 border border-cyber/50 relative overflow-hidden group">
-                    <i class="fas fa-cogs group-hover:rotate-180 transition-transform duration-500"></i>
-                    <span id="btnText">Engage W.A.K.E.E.L.</span>
-                    <svg id="btnSpinner" class="animate-spin h-5 w-5 text-white hidden"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                    <i
-                        class="fas fa-microchip absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                </button>
-            </div>
-
-            <!-- Terminal Output with scanlines -->
-            <div
-                class="bg-panelbg/90 backdrop-blur-sm rounded-xl flex-1 flex flex-col glow-box overflow-hidden relative">
-                <div class="border-b border-gray-800 p-2 flex justify-between items-center bg-black/40">
-                    <span
-                        class="text-[10px] text-gray-500 uppercase font-black tracking-widest pl-2 flex items-center gap-2">
-                        <i class="fas fa-code"></i>
-                        Live Subprocess Stream
-                        <i class="fas fa-circle text-cyber text-[6px] animate-pulse"></i>
-                    </span>
-                    <div class="flex gap-2">
-                        <i class="fas fa-terminal text-gray-600 text-xs"></i>
-                        <i class="fas fa-database text-gray-600 text-xs"></i>
-                    </div>
-                </div>
-                <div id="terminal"
-                    class="p-4 font-mono text-[11px] sm:text-xs text-gray-400 overflow-y-auto flex-1 whitespace-pre-wrap leading-relaxed bg-[linear-gradient(0deg,rgba(0,240,255,0.02)_1px,transparent_1px)] bg-[size:100%_2px]">
-                    <!-- Logs go here -->
-                </div>
-                <!-- Terminal scanline effect -->
-                <div
-                    class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-cyber/5 to-transparent pointer-events-none">
-                </div>
-            </div>
+      <div style="margin-top:14px;">
+        <label class="field-label" style="margin-bottom:8px;">Frequency sweep</label>
+        <div class="sweep-tabgroup">
+        <div class="tabgroup" role="tablist">
+          <button type="button" class="active" data-mode="prompt">From prompt</button>
+          <button type="button" data-mode="list">List</button>
+          <button type="button" data-mode="range">Range</button>
+        </div>
         </div>
 
-        <!-- RIGHT COLUMN: Analytics & Telemetry -->
-        <div class="w-1/2 flex flex-col gap-4">
-
-            <!-- Phase Tracker with holographic effect -->
-            <div
-                class="bg-panelbg/90 backdrop-blur-sm rounded-xl p-4 glow-box shrink-0 flex flex-col justify-center relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-neon to-cyber-purple"></div>
-                <div class="absolute inset-0 holographic opacity-0 hover:opacity-100 transition-opacity"></div>
-                <label class="text-xs text-neon uppercase tracking-widest font-bold mb-3 block flex items-center gap-2">
-                    <i class="fas fa-chart-line"></i>
-                    W.A.K.E.E.L. Pipeline Phase
-                    <i class="fas fa-sync-alt text-[8px] animate-spin" style="animation-duration: 3s;"></i>
-                </label>
-                <div id="phase-banner"
-                    class="w-full bg-darkbg/80 border border-gray-800 rounded-lg p-4 text-center text-sm sm:text-lg font-black tracking-widest text-gray-600 transition-all duration-500 uppercase shadow-inner relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-cyber/0 via-cyber/10 to-cyber/0 animate-pulse">
-                    </div>
-                    AWAITING DIRECTIVE
-                </div>
-                <!-- Status indicators -->
-                <div class="flex justify-between mt-3 text-[8px] text-gray-600">
-                    <span><i class="fas fa-tachometer-alt"></i> THROUGHPUT: <span id="throughput">0</span> ops</span>
-                    <span><i class="fas fa-clock"></i> LATENCY: <span id="latency">0</span> ms</span>
-                    <span><i class="fas fa-microchip"></i> CORES: 8</span>
-                </div>
-            </div>
-
-            <!-- Dynamic Pure PPA Chart with enhanced styling -->
-            <div
-                class="bg-panelbg/90 backdrop-blur-sm rounded-xl flex-1 p-4 glow-box flex flex-col relative overflow-hidden">
-                <div
-                    class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyber via-cyber-purple to-cyber-pink">
-                </div>
-                <label id="chart-title"
-                    class="text-xs text-purple-400 uppercase tracking-widest font-bold mb-4 block flex items-center gap-2">
-                    <i class="fas fa-chart-bar"></i>
-                    Silicon PPA Analytics (Awaiting Data)
-                </label>
-                <div
-                    class="flex-1 relative w-full h-full flex items-center justify-center bg-darkbg/50 rounded-lg border border-gray-800/50 p-2">
-                    <canvas id="metricsChart"></canvas>
-                </div>
-                <!-- Legend with icons -->
-                <div class="flex justify-center gap-4 mt-3 text-[10px]">
-                    <div class="flex items-center gap-1">
-                        <div class="w-2 h-2 bg-cyber rounded-full"></div><span class="text-gray-500">Performance</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div><span class="text-gray-500">Area</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <div class="w-2 h-2 bg-amber-500 rounded-full"></div><span class="text-gray-500">Power</span>
-                    </div>
-                </div>
-            </div>
+        <div class="sweep-panel" data-panel="prompt">
+          <p class="run-hint" style="margin:0;">Frequency is parsed from the directive text above (e.g. "at 500 MHz", "1 GHz").</p>
         </div>
+
+        <div class="sweep-panel" data-panel="list">
+          <label class="field-label" for="sweep-list">GHz values, comma-separated</label>
+          <input type="text" id="sweep-list" placeholder="0.2, 0.5, 1.0">
+        </div>
+
+        <div class="sweep-panel" data-panel="range">
+          <div class="sweep-range-row">
+            <div><span>Start (GHz)</span><input type="number" id="sweep-start" step="0.01" placeholder="0.2"></div>
+            <div><span>End (GHz)</span><input type="number" id="sweep-end" step="0.01" placeholder="1.0"></div>
+            <div><span>Step (GHz)</span><input type="number" id="sweep-step" step="0.01" placeholder="0.2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="advanced-toggle" id="advToggle"><span class="chev">▸</span> Advanced parameters</div>
+      <div class="advanced-panel" id="advPanel">
+        <div class="knob-row">
+          <div>
+            <label class="field-label" for="max-retries">Self-heal retry budget</label>
+            <p class="knob-hint">Attempts per sweep point before that frequency is marked failed. Server ceiling: 10.</p>
+          </div>
+          <input type="number" id="max-retries" min="1" max="10" placeholder="3">
+        </div>
+        <div class="knob-row">
+          <div>
+            <label class="field-label" for="max-sweep-points">Sweep point cap</label>
+            <p class="knob-hint">Max frequency points a List/Range sweep may expand to. Server ceiling: 200.</p>
+          </div>
+          <input type="number" id="max-sweep-points" min="1" max="200" placeholder="50">
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <button class="run-btn" id="runBtn">
+          <span class="spinner" id="btnSpinner"></span>
+          <span id="btnText">Run flow</span>
+        </button>
+        <button class="stop-btn" id="stopBtn" disabled title="Stop the running flow">■</button>
+      </div>
+      <p class="run-hint">Runs entirely against your local OpenLane/ORFS checkout via the Wakeel gateway — no cloud calls.</p>
     </div>
 
-    <script>
-        // Matrix Rain Effect
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx2 = canvas.getContext('2d');
+    <div class="panel">
+      <span class="corner-bl"></span><span class="corner-br"></span>
+      <p class="panel-label">Session</p>
+      <div class="stat-row"><span>Runs this session</span><b id="stat-runs">0</b></div>
+      <div class="stat-row"><span>Avg. wall time</span><b id="stat-latency">—</b></div>
+    </div>
+  </div>
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+  <!-- RIGHT: telemetry column -->
+  <div>
+    <div class="panel">
+      <span class="corner-bl"></span><span class="corner-br"></span>
+      <p class="panel-label">Sweep progress</p>
+      <div class="rail-wrap">
+        <div class="rail" id="rail">
+          <span class="rail-empty">No run started yet.</span>
+        </div>
+      </div>
+      <div class="rail-phase-label" id="phase-label">Awaiting directive</div>
+    </div>
 
-        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
-        const matrixArray = matrix.split("");
+    <div class="panel">
+      <span class="corner-bl"></span><span class="corner-br"></span>
+      <p class="panel-label">
+        Live stream
+        <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;" id="mode-label"></span>
+      </p>
+      <div id="terminal"></div>
+    </div>
 
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
+    <div class="panel">
+      <span class="corner-bl"></span><span class="corner-br"></span>
+      <p class="panel-label">PPA results</p>
+      <div id="results-wrap">
+        <p class="results-empty">Results populate here once a sweep point completes.</p>
+      </div>
+      <div class="chart-wrap"><canvas id="ppaChart"></canvas></div>
+    </div>
+  </div>
+</main>
 
-        for (let x = 0; x < columns; x++) {
-            drops[x] = 1;
+<footer>WAKEEL v3 · designed &amp; built by Youness Yunair · local-only, no API key required · uplink: ws://127.0.0.1:8000/ws/run_eda</footer>
+
+<script>
+const WS_URL = "ws://127.0.0.1:8000/ws/run_eda";
+
+// ---- element refs ----
+const runBtn = document.getElementById('runBtn');
+const stopBtn = document.getElementById('stopBtn');
+const btnText = document.getElementById('btnText');
+const btnSpinner = document.getElementById('btnSpinner');
+const terminal = document.getElementById('terminal');
+const promptInput = document.getElementById('prompt');
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+const rail = document.getElementById('rail');
+const phaseLabel = document.getElementById('phase-label');
+const resultsWrap = document.getElementById('results-wrap');
+const modeLabel = document.getElementById('mode-label');
+const statRuns = document.getElementById('stat-runs');
+const statLatency = document.getElementById('stat-latency');
+const advToggle = document.getElementById('advToggle');
+const advPanel = document.getElementById('advPanel');
+const themeToggle = document.getElementById('themeToggle');
+
+// ---- day/night theme ----
+// Persisted via localStorage -- safe here because this file runs as a
+// normal standalone page served by/alongside wakeel_api.py, not inside
+// Claude's sandboxed artifact preview (where browser storage is
+// disallowed). If you ever embed this page inside another app's iframe
+// sandbox, swap this for an in-memory default instead.
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  themeToggle.textContent = theme === 'light' ? '◑' : '◐';
+  themeToggle.title = theme === 'light' ? 'Switch to night mode' : 'Switch to day (blueprint) mode';
+  try { localStorage.setItem('wakeel-theme', theme); } catch (e) { /* storage unavailable -- fine, just won't persist */ }
+}
+let savedTheme = 'dark';
+try { savedTheme = localStorage.getItem('wakeel-theme') || 'dark'; } catch (e) { /* ignore */ }
+applyTheme(savedTheme);
+themeToggle.addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  applyTheme(next);
+  refreshChartTheme();
+});
+
+let runCount = 0;
+let latencyTotalMs = 0;
+let ws = null;
+let railPoints = []; // [{ghz, el, tickEl}]
+let resultsByPeriod = {}; // target_period_ps -> row data
+
+// ---- advanced parameters disclosure ----
+advToggle.addEventListener('click', () => {
+  advToggle.classList.toggle('open');
+  advPanel.classList.toggle('open');
+});
+
+// ---- sweep mode tabs ----
+document.querySelectorAll('.sweep-tabgroup .tabgroup button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.closest('.tabgroup').querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.mode;
+    document.querySelectorAll('.sweep-panel').forEach(p => p.classList.toggle('visible', p.dataset.panel === mode));
+  });
+});
+document.querySelector('.sweep-panel[data-panel="prompt"]').classList.add('visible');
+
+function currentSweepMode(){
+  return document.querySelector('.sweep-tabgroup .tabgroup button.active').dataset.mode;
+}
+
+function buildSweepPayload(){
+  const mode = currentSweepMode();
+  if (mode === 'list') {
+    const raw = document.getElementById('sweep-list').value.trim();
+    if (!raw) return null;
+    const freqs = raw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n) && n > 0);
+    if (!freqs.length) return null;
+    return { frequencies_ghz: freqs };
+  }
+  if (mode === 'range') {
+    const start = parseFloat(document.getElementById('sweep-start').value);
+    const end = parseFloat(document.getElementById('sweep-end').value);
+    const step = parseFloat(document.getElementById('sweep-step').value) || undefined;
+    if (isNaN(start) || isNaN(end)) return null;
+    const cfg = { start_ghz: start, end_ghz: end };
+    if (step) cfg.step_ghz = step;
+    return cfg;
+  }
+  return null; // 'prompt' mode -- let the backend parse the prompt text
+}
+
+function buildAdvancedKnobs(){
+  const knobs = {};
+  const retries = parseInt(document.getElementById('max-retries').value, 10);
+  const points = parseInt(document.getElementById('max-sweep-points').value, 10);
+  if (!isNaN(retries) && retries > 0) knobs.max_retries = retries;
+  if (!isNaN(points) && points > 0) knobs.max_sweep_points = points;
+  return knobs;
+}
+
+// ---- engine / tech-node toggle ----
+document.querySelectorAll('.engine-tabgroup .tabgroup button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.closest('.tabgroup').querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+function currentEngineOverride(){
+  const active = document.querySelector('.engine-tabgroup .tabgroup button.active');
+  const val = active ? active.dataset.engine : '';
+  return val || null; // '' (Auto) -> null, let the backend parse the prompt
+}
+
+function setStatus(text, cls){
+  statusText.textContent = text;
+  statusDot.className = 'status-dot' + (cls ? ' ' + cls : '');
+}
+
+function appendLog(type, message){
+  const line = document.createElement('div');
+  line.className = 'log-line ' + type;
+  const tag = document.createElement('span');
+  tag.className = 'tag';
+  tag.textContent = '[' + type + ']';
+  line.appendChild(tag);
+  line.appendChild(document.createTextNode(message));
+  terminal.appendChild(line);
+  while (terminal.childElementCount > 400) terminal.removeChild(terminal.firstChild);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+function buildRail(sweepPayload){
+  rail.innerHTML = '';
+  railPoints = [];
+  let freqs = [];
+  if (sweepPayload && sweepPayload.frequencies_ghz) {
+    freqs = sweepPayload.frequencies_ghz.slice().sort((a,b) => a - b);
+  } else if (sweepPayload && sweepPayload.start_ghz !== undefined) {
+    const step = sweepPayload.step_ghz || 0.1;
+    for (let f = sweepPayload.start_ghz; f <= sweepPayload.end_ghz + step * 1e-6; f += step) {
+      freqs.push(Math.round(f * 1e6) / 1e6);
+    }
+  } else {
+    freqs = [null];
+  }
+
+  freqs.forEach((ghz, i) => {
+    if (i > 0) {
+      const line = document.createElement('div');
+      line.className = 'rail-line';
+      rail.appendChild(line);
+    }
+    const point = document.createElement('div');
+    point.className = 'rail-point';
+    point.innerHTML = `<div class="rail-tick"></div><div class="rail-freq">${ghz !== null ? ghz + ' GHz' : '?'}</div>`;
+    rail.appendChild(point);
+    railPoints.push({ ghz, el: point, lineBefore: i > 0 ? rail.children[rail.children.length - 2] : null });
+  });
+}
+
+function markRailActive(ghz){
+  railPoints.forEach(p => {
+    if (p.el.classList.contains('active')) {
+      p.el.classList.remove('active');
+      p.el.classList.add('success');
+    }
+  });
+  const target = railPoints.find(p => p.ghz === null || Math.abs(p.ghz - ghz) < 0.005) || railPoints.find(p => !p.el.classList.contains('success') && !p.el.classList.contains('failed'));
+  if (target) {
+    target.el.classList.add('active');
+    target.ghz = ghz;
+    target.el.querySelector('.rail-freq').textContent = ghz + ' GHz';
+    if (target.lineBefore) target.lineBefore.classList.add('done');
+  }
+}
+
+function markRailResult(ghz, status){
+  const target = railPoints.find(p => p.ghz !== null && Math.abs(p.ghz - ghz) < 0.005) || railPoints.find(p => p.el.classList.contains('active'));
+  if (target) {
+    target.el.classList.remove('active');
+    target.el.classList.add(status === 'SUCCESS' ? 'success' : 'failed');
+  }
+}
+
+let chart = null;
+function themeColor(varName){
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+function ensureChart(){
+  if (chart) return chart;
+  const ctx = document.getElementById('ppaChart').getContext('2d');
+  const mutedColor = themeColor('--fg-500');
+  const gridColor = themeColor('--graphite-800');
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: [], datasets: [
+      { label: 'Area (µm²)', data: [], backgroundColor: 'rgba(79,209,197,0.55)', borderRadius: 3, yAxisID: 'y' },
+      { label: 'Power (mW)', data: [], backgroundColor: 'rgba(217,164,65,0.55)', borderRadius: 3, yAxisID: 'y1' },
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: mutedColor, font: { family: 'IBM Plex Mono', size: 10 } }, grid: { display: false } },
+        y: { position: 'left', ticks: { color: mutedColor, font: { size: 10 } }, grid: { color: gridColor } },
+        y1: { position: 'right', ticks: { color: mutedColor, font: { size: 10 } }, grid: { display: false } },
+      },
+      plugins: { legend: { labels: { color: mutedColor, font: { family: 'IBM Plex Mono', size: 10 } } } },
+      animation: { duration: 300 },
+    }
+  });
+  return chart;
+}
+function refreshChartTheme(){
+  if (!chart) return;
+  const mutedColor = themeColor('--fg-500');
+  const gridColor = themeColor('--graphite-800');
+  chart.options.scales.x.ticks.color = mutedColor;
+  chart.options.scales.y.ticks.color = mutedColor;
+  chart.options.scales.y.grid.color = gridColor;
+  chart.options.scales.y1.ticks.color = mutedColor;
+  chart.options.plugins.legend.labels.color = mutedColor;
+  chart.update();
+}
+
+function renderResults(){
+  const rows = Object.values(resultsByPeriod).sort((a,b) => a.target_freq_ghz - b.target_freq_ghz);
+  if (!rows.length) {
+    resultsWrap.innerHTML = '<p class="results-empty">Results populate here once a sweep point completes.</p>';
+    return;
+  }
+  let html = '<table class="results"><thead><tr>' +
+    '<th>Target</th><th>Achieved</th><th>Area (µm²)</th><th>Power (W)</th><th>Mode</th><th>Status</th>' +
+    '</tr></thead><tbody>';
+  rows.forEach(r => {
+    html += `<tr>
+      <td>${r.target_freq_ghz} GHz</td>
+      <td>${r.achieved_freq_ghz ?? '—'}</td>
+      <td>${r.area_um2 ?? '—'}</td>
+      <td>${r.power_w ?? '—'}</td>
+      <td>${r.mode ?? '—'}</td>
+      <td><span class="status-badge ${r.status}">${r.status}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  resultsWrap.innerHTML = html;
+
+  const c = ensureChart();
+  c.data.labels = rows.map(r => r.target_freq_ghz + ' GHz');
+  c.data.datasets[0].data = rows.map(r => r.area_um2 ?? 0);
+  c.data.datasets[1].data = rows.map(r => (r.power_w ?? 0) * 1000);
+  c.update();
+}
+
+runBtn.addEventListener('click', () => {
+  const prompt = promptInput.value.trim();
+  if (!prompt) { promptInput.focus(); return; }
+
+  const sweepPayload = buildSweepPayload();
+  const engineOverride = currentEngineOverride();
+
+  runCount++;
+  statRuns.textContent = runCount;
+  const startTime = Date.now();
+
+  runBtn.disabled = true;
+  stopBtn.disabled = false;
+  btnText.textContent = 'Running…';
+  btnSpinner.classList.add('visible');
+  terminal.innerHTML = '';
+  resultsByPeriod = {};
+  renderResults();
+  modeLabel.textContent = '';
+  phaseLabel.textContent = 'Establishing uplink…';
+  setStatus('Uplink active', 'active');
+  buildRail(sweepPayload);
+
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => {
+    const payload = { prompt, ...buildAdvancedKnobs() };
+    if (sweepPayload) payload.sweep = sweepPayload;
+    if (engineOverride) payload.engine = engineOverride;
+    ws.send(JSON.stringify(payload));
+  };
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.message && data.message.includes('Manufacturing Mode')) modeLabel.textContent = '· Google/SkyWater 130nm';
+    if (data.message && data.message.includes('Academic Mode')) modeLabel.textContent = '· ASAP7 7nm FinFET';
+
+    switch (data.type) {
+      case 'log':
+        appendLog('log', data.message);
+        break;
+      case 'copilot':
+        appendLog('copilot', data.message);
+        break;
+      case 'phase': {
+        appendLog('phase', data.message);
+        phaseLabel.textContent = data.message.replace(/=+/g, '').trim();
+        const m = data.message.match(/([\d.]+)\s*GHz/);
+        if (m) markRailActive(parseFloat(m[1]));
+        break;
+      }
+      case 'success':
+        appendLog('success', data.message);
+        break;
+      case 'warning':
+        appendLog('warning', data.message);
+        break;
+      case 'error':
+        appendLog('error', data.message);
+        if (!data.message.includes('SWEEP') && !data.message.includes('TIMEOUT')) {
+          setStatus('Fault', 'fail');
         }
-
-        function drawMatrix() {
-            ctx2.fillStyle = 'rgba(5, 5, 5, 0.04)';
-            ctx2.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx2.fillStyle = '#0f0';
-            ctx2.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
-                ctx2.fillStyle = `rgba(0, 240, 255, ${Math.random() * 0.2})`;
-                ctx2.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-        }
-
-        setInterval(drawMatrix, 35);
-
-        // Particle System
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'absolute rounded-full pointer-events-none';
-                particle.style.width = Math.random() * 3 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.backgroundColor = `rgba(0, 240, 255, ${Math.random() * 0.3})`;
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animation = `float ${Math.random() * 10 + 5}s ease-in-out infinite`;
-                particle.style.animationDelay = Math.random() * 5 + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
-        createParticles();
-
-        const runBtn = document.getElementById('runBtn');
-        const btnText = document.getElementById('btnText');
-        const btnSpinner = document.getElementById('btnSpinner');
-        const terminal = document.getElementById('terminal');
-        const promptInput = document.getElementById('prompt');
-        const phaseBanner = document.getElementById('phase-banner');
-        const chartTitle = document.getElementById('chart-title');
-
-        // Metrics counters
-        let operationCount = 0;
-        let latencySum = 0;
-
-        let ws;
-
-        // --- PURE PPA CHART.JS SETUP with enhanced options---
-        const ctx = document.getElementById('metricsChart').getContext('2d');
-        const siliconChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Performance (GHz)', 'Logic Area (um²)', 'Total Power (mW)'],
-                datasets: [{
-                    label: 'PPA Metrics',
-                    data: [0, 0, 0],
-                    backgroundColor: [
-                        'rgba(0, 240, 255, 0.7)',
-                        'rgba(168, 85, 247, 0.7)',
-                        'rgba(245, 158, 11, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgba(0, 240, 255, 1)',
-                        'rgba(168, 85, 247, 1)',
-                        'rgba(245, 158, 11, 1)'
-                    ],
-                    borderWidth: 2,
-                    borderRadius: 8,
-                    barPercentage: 0.65,
-                    categoryPercentage: 0.8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        type: 'logarithmic',
-                        grid: { color: 'rgba(0, 240, 255, 0.05)', drawBorder: false },
-                        ticks: { color: '#888', font: { family: 'monospace', size: 10 } },
-                        title: { display: true, text: 'Log Scale', color: '#666', font: { size: 9 } }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#aaa', font: { weight: 'bold', size: 11 } }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(10,10,15,0.98)',
-                        titleColor: '#00f0ff',
-                        bodyColor: '#fff',
-                        borderColor: '#00f0ff',
-                        borderWidth: 1,
-                        padding: 12,
-                        bodyFont: { size: 12, weight: 'bold', family: 'monospace' },
-                        callbacks: {
-                            label: function (context) {
-                                let label = context.dataset.label || '';
-                                let value = context.raw;
-                                if (context.dataIndex === 0) return `⚡ Performance: ${value.toFixed(2)} GHz`;
-                                if (context.dataIndex === 1) return `📐 Logic Area: ${value.toFixed(2)} µm²`;
-                                return `⚡ Total Power: ${value.toFixed(2)} mW`;
-                            }
-                        }
-                    }
-                },
-                animation: { duration: 1200, easing: 'easeOutElastic' }
-            }
+        break;
+      case 'cancelled':
+        appendLog('warning', '[CANCELLED] ' + (data.message || 'Run stopped by user.'));
+        setStatus('Stopped', 'stopped');
+        phaseLabel.textContent = 'Run stopped';
+        break;
+      case 'ppa_summary':
+        resultsByPeriod[data.target_period_ps] = data;
+        renderResults();
+        markRailResult(data.target_freq_ghz, data.status);
+        break;
+      case 'sweep_summary':
+        data.rows.forEach(row => {
+          const period = parseFloat(row['Target_Period(ps)']);
+          resultsByPeriod[period] = {
+            target_period_ps: period,
+            target_freq_ghz: parseFloat(row['Freq(GHz)']),
+            achieved_freq_ghz: null,
+            area_um2: row['Area(um2)'] === 'N/A' ? null : row['Area(um2)'],
+            power_w: row['Power(W)'] === 'N/A' ? null : row['Power(W)'],
+            mode: row['Mode'],
+            status: row['Status'],
+            ...resultsByPeriod[period],
+          };
         });
-
-        // --- WEBSOCKET LOGIC with enhanced UI updates---
-        runBtn.addEventListener('click', () => {
-            const prompt = promptInput.value.trim();
-            if (!prompt) return;
-
-            operationCount++;
-            document.getElementById('throughput').innerText = operationCount;
-
-            const startTime = Date.now();
-
-            runBtn.disabled = true;
-            btnText.innerText = "W.A.K.E.E.L. Computing...";
-            btnSpinner.classList.remove('hidden');
-            terminal.innerHTML = '';
-            setUIStatus("ROUTING ACTIVE", "text-cyber", "bg-cyber shadow-[0_0_8px_#00f0ff] animate-pulse");
-            updatePhaseBanner("INITIALIZING W.A.K.E.E.L...", "border-cyber text-cyber shadow-[0_0_20px_rgba(0,240,255,0.2)] bg-cyber/5");
-
-            siliconChart.data.datasets[0].data = [0, 0, 0];
-            siliconChart.update();
-            chartTitle.innerHTML = '<i class="fas fa-chart-bar"></i> Silicon PPA Analytics (Awaiting Data)';
-
-            ws = new WebSocket("ws://127.0.0.1:8000/ws/run_eda");
-
-            ws.onopen = () => { ws.send(JSON.stringify({ prompt: prompt })); };
-
-            function appendLog(htmlString) {
-                terminal.insertAdjacentHTML('beforeend', htmlString);
-                while (terminal.childElementCount > 150) {
-                    terminal.removeChild(terminal.firstChild);
-                }
-                terminal.scrollTop = terminal.scrollHeight;
-            }
-
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                if (data.message && data.message.includes("Manufacturing Mode")) {
-                    chartTitle.innerHTML = '<i class="fas fa-industry"></i> Silicon PPA Analytics (Google/SkyWater 130nm)';
-                    chartTitle.className = "text-xs text-blue-400 uppercase tracking-widest font-bold mb-4 block";
-                }
-                if (data.message && data.message.includes("Academic Mode")) {
-                    chartTitle.innerHTML = '<i class="fas fa-graduation-cap"></i> Silicon PPA Analytics (ASAP7 7nm FinFET)';
-                    chartTitle.className = "text-xs text-purple-400 uppercase tracking-widest font-bold mb-4 block";
-                }
-
-                if (data.type === "log" || data.type === "copilot") {
-                    let color = data.type === "copilot" ? "text-cyber font-bold tracking-wide" : "text-gray-500";
-                    let icon = data.type === "copilot" ? '<i class="fas fa-robot text-cyber mr-1"></i>' : '<i class="fas fa-terminal mr-1"></i>';
-                    appendLog(`<div class="${color} flex items-start gap-1">${icon}${data.message}</div>`);
-                }
-
-                if (data.type === "phase") {
-                    updatePhaseBanner(data.message, "border-neon text-neon shadow-[0_0_20px_rgba(57,255,20,0.2)] bg-neon/5");
-                    appendLog(`<div class="text-neon font-black mt-3 mb-3 pl-2 border-l-2 border-neon bg-neon/10 py-1"><i class="fas fa-arrow-right mr-2"></i>${data.message}</div>`);
-                }
-
-                if (data.type === "success") {
-                    appendLog(`<div class="text-green-400 font-bold"><i class="fas fa-check-circle mr-1"></i>${data.message}</div>`);
-
-                    if (data.message.includes("-> Performance")) {
-                        siliconChart.data.datasets[0].data[0] = parseFloat(data.message.split(":")[1].trim());
-                        siliconChart.update();
-                    }
-                    if (data.message.includes("-> Logic Area")) {
-                        siliconChart.data.datasets[0].data[1] = parseFloat(data.message.split(":")[1].trim());
-                        siliconChart.update();
-                    }
-                    if (data.message.includes("-> Total Power")) {
-                        let watts = parseFloat(data.message.split(":")[1].trim());
-                        siliconChart.data.datasets[0].data[2] = watts * 1000;
-                        siliconChart.update();
-                    }
-                }
-
-                if (data.type === "warning") {
-                    appendLog(`<div class="text-yellow-400 font-bold bg-yellow-400/10 p-1 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>${data.message}</div>`);
-                    if (data.message.includes("HEURISTICS") || data.message.includes("RESOURCE MODE") || data.message.startsWith("[KB:")) {
-                        updatePhaseBanner(data.message, "border-yellow-400 text-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.2)] bg-yellow-400/5 text-sm");
-                    }
-                }
-
-                if (data.type === "error") {
-                    appendLog(`<div class="text-red-500 font-bold bg-red-500/10 p-2 mt-2 border-l-2 border-red-500"><i class="fas fa-bug mr-1"></i>${data.message}</div>`);
-                    if (!data.message.includes("[SWEEP POINT FAILED]")) {
-                        setUIStatus("FATAL FAULT", "text-red-500", "bg-red-500 shadow-[0_0_8px_#ef4444]");
-                        updatePhaseBanner("PIPELINE CRASHED", "border-red-500 text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)] bg-red-500/5");
-                    }
-                }
-
-                if (data.type === "final" && data.status === "SUCCESS") {
-                    setUIStatus("W.A.K.E.E.L. STANDBY", "text-neon", "bg-neon shadow-[0_0_8px_#39ff14]");
-                    updatePhaseBanner("SILICON COMPILATION COMPLETE", "border-cyber text-cyber shadow-[0_0_20px_rgba(0,240,255,0.3)] bg-cyber/10");
-                    const latency = Date.now() - startTime;
-                    latencySum += latency;
-                    document.getElementById('latency').innerText = Math.round(latencySum / operationCount);
-                }
-
-                if (data.type === "finished") {
-                    runBtn.disabled = false;
-                    btnText.innerText = "Engage W.A.K.E.E.L.";
-                    btnSpinner.classList.add('hidden');
-                }
-            };
-
-            ws.onclose = () => {
-                if (runBtn.disabled) {
-                    runBtn.disabled = false;
-                    btnText.innerText = "Engage W.A.K.E.E.L.";
-                    btnSpinner.classList.add('hidden');
-                    setUIStatus("CONNECTION LOST", "text-red-500", "bg-red-500 shadow-[0_0_8px_#ef4444]");
-                }
-            };
-        });
-
-        function setUIStatus(text, textClass, dotClass) {
-            const statText = document.getElementById('status-val');
-            const statDot = document.getElementById('status-dot');
-            statText.innerText = text;
-            statText.className = `text-xs font-bold tracking-widest uppercase ${textClass}`;
-            statDot.className = `w-2.5 h-2.5 rounded-full ${dotClass}`;
+        renderResults();
+        break;
+      case 'final':
+        if (data.status === 'SUCCESS') {
+          setStatus('Standby', 'ok');
+          phaseLabel.textContent = 'Run complete';
+          const elapsed = Date.now() - startTime;
+          latencyTotalMs += elapsed;
+          statLatency.textContent = (latencyTotalMs / runCount / 1000).toFixed(1) + 's';
         }
+        break;
+      case 'finished':
+        runBtn.disabled = false;
+        stopBtn.disabled = true;
+        btnText.textContent = 'Run flow';
+        btnSpinner.classList.remove('visible');
+        break;
+    }
+  };
 
-        function updatePhaseBanner(text, classes) {
-            phaseBanner.innerText = text;
-            phaseBanner.className = `w-full border rounded-lg p-4 text-center font-black tracking-widest transition-all duration-300 uppercase ${classes}`;
-        }
+  ws.onclose = () => {
+    if (runBtn.disabled) {
+      runBtn.disabled = false;
+      stopBtn.disabled = true;
+      btnText.textContent = 'Run flow';
+      btnSpinner.classList.remove('visible');
+      setStatus('Connection lost', 'fail');
+    }
+  };
+});
 
-        // Resize handler for matrix canvas
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-    </script>
+stopBtn.addEventListener('click', () => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'stop' }));
+    stopBtn.disabled = true;
+    btnText.textContent = 'Stopping…';
+  }
+});
+</script>
 </body>
-
 </html>

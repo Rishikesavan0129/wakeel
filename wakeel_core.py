@@ -9,4 +9,10 @@ config generation, fuzzy design discovery, scored KB matching, optional
 local-model correction). Gemini and google-generativeai are gone entirely --
 grep the whole package, there's no `import google` anywhere anymore.
 """
-from wakeel.orchestrator import run_agentic_flow_stream  # noqa: F401
+from wakeel.orchestrator import (  # noqa: F401
+    run_agentic_flow_stream,
+    DEFAULT_MAX_RETRIES,
+    ABSOLUTE_MAX_RETRIES,
+    MAX_SWEEP_POINTS,
+    ABSOLUTE_MAX_SWEEP_POINTS,
+)
