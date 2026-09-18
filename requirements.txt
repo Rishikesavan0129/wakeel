@@ -4,5 +4,5 @@
 # bump the ranges deliberately when you actually want to move up.
 fastapi~=0.141.1
 uvicorn[standard]~=0.52.4
-websockets~=17.1
+websockets~=14.2
 httpx~=0.28.1   # only used if WAKEEL_LOCAL_LLM_ENABLED=1
