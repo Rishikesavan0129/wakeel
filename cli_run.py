@@ -10,6 +10,7 @@ Usage:
     python3 cli_run.py "run wakeel_alu at 200 MHz on 130nm"
     python3 cli_run.py "run wakeel_alu on 130nm" --sweep 0.2,0.4,0.6
     python3 cli_run.py "run wakeel_alu on 130nm" --sweep-range 0.2:1.0:0.2
+    python3 cli_run.py "run wakeel_alu at 500 MHz" --engine orfs
 """
 import argparse
 import asyncio
@@ -47,7 +48,8 @@ def _build_sweep_arg(args) -> dict | None:
     return None
 
 
-async def main(prompt: str, sweep: dict | None, max_retries: int | None, max_sweep_points: int | None):
+async def main(prompt: str, sweep: dict | None, max_retries: int | None, max_sweep_points: int | None,
+               engine: str | None = None):
     print(f"Connecting to {WS_URL} ...")
     try:
         async with websockets.connect(WS_URL) as ws:
@@ -58,6 +60,8 @@ async def main(prompt: str, sweep: dict | None, max_retries: int | None, max_swe
                 payload["max_retries"] = max_retries
             if max_sweep_points is not None:
                 payload["max_sweep_points"] = max_sweep_points
+            if engine:
+                payload["engine"] = engine
             await ws.send(json.dumps(payload))
             print(f"Sent: {prompt!r}" + (f"  sweep={sweep}" if sweep else "") + "\n")
 
@@ -95,8 +99,12 @@ if __name__ == "__main__":
     parser.add_argument("--sweep-range", help="start:end:step in GHz, e.g. 0.2:1.0:0.2")
     parser.add_argument("--max-retries", type=int, help="Self-heal attempts per sweep point before giving up (default 3, server-capped at 10)")
     parser.add_argument("--max-sweep-points", type=int, help="Sweep point cap (default 50, server-capped at 200)")
+    parser.add_argument("--engine", choices=["openlane", "orfs"],
+                         help="Explicit engine/tech-node selection (openlane=130nm sky130, orfs=7nm ASAP7) -- "
+                              "bypasses prompt-text guessing, same as the UI's engine toggle. Omit to let the "
+                              "prompt decide.")
     if len(sys.argv) < 2:
         print('Usage: python3 cli_run.py "run wakeel_alu at 200 MHz on 130nm" [--sweep 0.2,0.4] [--sweep-range 0.2:1.0:0.2]')
         sys.exit(1)
     ns = parser.parse_args()
-    asyncio.run(main(ns.prompt, _build_sweep_arg(ns), ns.max_retries, ns.max_sweep_points))
+    asyncio.run(main(ns.prompt, _build_sweep_arg(ns), ns.max_retries, ns.max_sweep_points, ns.engine))
